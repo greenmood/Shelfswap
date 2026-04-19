@@ -82,7 +82,7 @@ The complicated week. Budget it accordingly — this is where half the interesti
 - [x] `POST /api/swaps` with all five validations from the API doc
 - [x] Propose-swap screen: radio list of my available books, "You want / Offer in return" layout
 - [x] Transactional email to owner on new request
-- [ ] My Swaps tab: incoming/outgoing segmented control, status pills
+- [x] My Swaps tab: incoming/outgoing segmented control, status pills
 - [ ] Swap detail screen (pending state)
 - [ ] `PATCH /api/swaps/:id` with accept/decline/cancel state machine
 - [ ] Transactional email on status change

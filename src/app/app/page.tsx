@@ -33,7 +33,13 @@ export default async function AppHome() {
             href="/app/discover"
             className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
           >
-            Discover →
+            Discover
+          </Link>
+          <Link
+            href="/app/swaps"
+            className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+          >
+            Swaps
           </Link>
           <Link
             href="/app/profile"
