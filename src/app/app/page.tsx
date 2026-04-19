@@ -28,13 +28,21 @@ export default async function AppHome() {
     <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
       <header className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Library</h1>
-        <Link
-          href="/app/profile"
-          aria-label="Profile"
-          className="text-xl text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
-        >
-          ⚙︎
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/app/discover"
+            className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+          >
+            Discover →
+          </Link>
+          <Link
+            href="/app/profile"
+            aria-label="Profile"
+            className="text-xl text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+          >
+            ⚙︎
+          </Link>
+        </div>
       </header>
 
       <div className="mt-6 space-y-3">

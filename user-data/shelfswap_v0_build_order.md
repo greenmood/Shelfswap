@@ -64,8 +64,8 @@ The `counterparty` API route now returns handle fields instead of `email`. Every
 
 **Goal:** you can see what's nearby, not just what's yours.
 
-- [ ] `discoverable_books` Postgres view
-- [ ] Discover feed: not-mine + available, paginated
+- [x] `discoverable_books` Postgres view
+- [x] Discover feed: not-mine + available, paginated
 - [ ] Search: `ilike` on title/author
 - [ ] Two filter chips: all / fiction (don't overthink)
 - [ ] Book detail screen: cover, title, author, condition, owner first name
