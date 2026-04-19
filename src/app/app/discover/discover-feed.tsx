@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
+import Link from "next/link";
 import { BookCover } from "@/components/book-cover";
 import { createClient } from "@/lib/supabase/client";
 
@@ -158,32 +159,34 @@ export function DiscoverFeed({
       {items.length > 0 && (
         <ul className="mt-6 space-y-2">
           {items.map((book) => (
-            <li
-              key={book.id}
-              className="flex items-start gap-3 rounded-md border border-neutral-200 p-3 dark:border-neutral-800"
-            >
-              <BookCover
-                cover_url={book.cover_url}
-                alt={book.title}
-                size="md"
-              />
-              <div className="min-w-0 flex-1 space-y-1">
-                <p className="line-clamp-2 text-sm font-medium">
-                  {book.title}
-                </p>
-                {book.author && (
-                  <p className="line-clamp-1 text-xs text-neutral-500">
-                    {book.author}
+            <li key={book.id}>
+              <Link
+                href={`/app/discover/books/${book.id}`}
+                className="flex items-start gap-3 rounded-md border border-neutral-200 p-3 hover:border-neutral-400 dark:border-neutral-800 dark:hover:border-neutral-600"
+              >
+                <BookCover
+                  cover_url={book.cover_url}
+                  alt={book.title}
+                  size="md"
+                />
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className="line-clamp-2 text-sm font-medium">
+                    {book.title}
                   </p>
-                )}
-                <p className="text-xs text-neutral-500">
-                  From{" "}
-                  <span className="font-medium">
-                    {book.owner_first_name ?? "someone"}
-                  </span>{" "}
-                  · {book.condition === "good" ? "Good" : "Worn"}
-                </p>
-              </div>
+                  {book.author && (
+                    <p className="line-clamp-1 text-xs text-neutral-500">
+                      {book.author}
+                    </p>
+                  )}
+                  <p className="text-xs text-neutral-500">
+                    From{" "}
+                    <span className="font-medium">
+                      {book.owner_first_name ?? "someone"}
+                    </span>{" "}
+                    · {book.condition === "good" ? "Good" : "Worn"}
+                  </p>
+                </div>
+              </Link>
             </li>
           ))}
         </ul>

@@ -68,7 +68,7 @@ The `counterparty` API route now returns handle fields instead of `email`. Every
 - [x] Discover feed: not-mine + available, paginated
 - [x] Search: `ilike` on title/author
 - [ ] Two filter chips: all / fiction (don't overthink)
-- [ ] Book detail screen: cover, title, author, condition, owner first name
+- [x] Book detail screen: cover, title, author, condition, owner first name
 - [ ] Owner profile click-through shows first name + handle previews (no email)
 
 **Don't:** propose-swap flow yet. Discover should feel solid on its own. Bugs you catch now (wrong books appearing, slow search, broken covers) are cheaper to fix without a swap flow sitting on top.
