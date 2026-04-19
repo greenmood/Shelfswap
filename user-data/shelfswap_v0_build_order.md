@@ -79,7 +79,7 @@ The `counterparty` API route now returns handle fields instead of `email`. Every
 
 The complicated week. Budget it accordingly — this is where half the interesting bugs live.
 
-- [ ] `POST /api/swaps` with all five validations from the API doc
+- [x] `POST /api/swaps` with all five validations from the API doc
 - [ ] Propose-swap screen: radio list of my available books, "You want / Offer in return" layout
 - [ ] Transactional email to owner on new request
 - [ ] My Swaps tab: incoming/outgoing segmented control, status pills
