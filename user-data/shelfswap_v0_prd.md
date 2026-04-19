@@ -8,7 +8,7 @@
 
 ## What it is
 
-A web app where I and my neighbors can list books from our home shelves and arrange swaps. Start hyper-local — one neighborhood, invite-based.
+A web app where I and a small cluster of friends can list books from our home shelves and arrange swaps. Start invite-based — trust comes from the social graph, not from a location filter.
 
 ---
 
@@ -17,9 +17,9 @@ A web app where I and my neighbors can list books from our home shelves and arra
 1. **Auth** — email magic link. No passwords to manage.
 2. **Home library** — users add books manually: title, author, condition (Good / Worn), optional cover. Title autocomplete via Open Library if it's quick to wire up; plain text fields otherwise.
 3. **Availability toggle** — each book is either _available to swap_ or _not_.
-4. **Discovery** — feed of available books filtered by zip code. Text search on title and author.
+4. **Discovery** — feed of available books across all users. No location filter in v0 (product targets Ukraine, where zip codes aren't meaningful). Text search on title and author.
 5. **Swap request** — requester picks one of their own books to offer in return. Owner sees the pair: "Alex wants _Klara and the Sun_ and is offering _Piranesi_."
-6. **Mutual accept → email reveal** — on accept, both users see each other's first name and email. They coordinate handoff themselves, off-platform.
+6. **Mutual accept → handle reveal** — on accept, both users see each other's first name and whichever handles (WhatsApp / Telegram / Instagram) the counterparty chose to share. They coordinate handoff off-platform on the channel they already use. Email stays under the hood for auth and transactional notifications — never shown to other users.
 7. **Close out** — either party taps "done." That's the whole lifecycle.
 
 ---
@@ -28,7 +28,7 @@ A web app where I and my neighbors can list books from our home shelves and arra
 
 - Borrow flow (return dates, reminders, disputes — too much)
 - Native apps — mobile web only
-- In-app chat — email reveal instead
+- In-app chat — handle reveal instead (WhatsApp / Telegram / Instagram)
 - Push notifications — transactional emails only
 - Barcode scanning
 - Maps or geocoding
@@ -64,7 +64,7 @@ If those hit, it's working. Decide what's next from there.
 ## Risks you just accept
 
 - **No moderation.** If someone misbehaves, you manually remove them. Fine at this scale.
-- **Zip-code granularity is crude.** Fine for one neighborhood.
+- **No location filter.** Everyone sees all available books. Fine until a second city cluster emerges; add `city` field then.
 - **Cold start is the whole game.** If you can't get five friends to join, no product decision fixes that.
 
 ---

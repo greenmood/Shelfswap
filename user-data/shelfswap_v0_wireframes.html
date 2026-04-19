@@ -914,7 +914,7 @@
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
       </div>
     </div>
-    <div class="note"><strong>Filter = zip match + <code>is_available = true</code> + not me.</strong> Distance is zip-centroid approximation, not real geolocation. No map view in v0.</div>
+    <div class="note"><strong>Filter = <code>is_available = true</code> + not me.</strong> No location filter in v0 — product targets Ukraine, where zip codes aren't a meaningful signal. Add a <code>city</code> field if a second-city cluster emerges.</div>
   </section>
 
   <!-- ============ 4. BOOK DETAIL ============ -->
@@ -959,7 +959,7 @@
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
       </div>
     </div>
-    <div class="note"><strong>One CTA only.</strong> No wishlist, no ratings, no save-for-later. Owner info is first name + rough distance — exact address never exposed.</div>
+    <div class="note"><strong>One CTA only.</strong> No wishlist, no ratings, no save-for-later. Owner info is first name only — no location in v0.</div>
   </section>
 
   <!-- ============ 5. PROPOSE SWAP ============ -->

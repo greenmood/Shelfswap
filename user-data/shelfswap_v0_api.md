@@ -10,7 +10,7 @@ Next.js route handlers + Supabase. The guiding rule: **read paths go direct from
 |---|---|---|---|
 | POST | (Supabase magic link) | Supabase | Auth is solved |
 | GET | `/api/me` | Server | Merge auth + profile cleanly |
-| PATCH | `/api/me` | Server | Validate zip format |
+| PATCH | `/api/me` | Server | Validate handles, require at least one |
 | — | `books` table reads/writes | Client direct | RLS is sufficient |
 | GET | `/api/book-lookup?q=` | Server | Proxy Open Library (avoid CORS, cache) |
 | POST | `/api/swaps` | Server | Creates row + triggers email |
@@ -43,13 +43,13 @@ await supabase.from('books').insert({
 
 RLS policy (`insert`) ensures `owner_id = auth.uid()`. Don't trust the client to set it honestly — enforce in the policy.
 
-### Discovery feed (same zip, not mine, available)
-The non-obvious bit: we need to join `users` to filter by zip code. Easiest path is a Postgres view or an RPC.
+### Discovery feed (not mine, available)
+v0 has no location filter, so the view is a thin convenience layer that joins `users` for the owner's first name.
 
 ```sql
 create view discoverable_books as
 select b.id, b.title, b.author, b.cover_url, b.condition,
-       b.owner_id, u.first_name as owner_first_name, u.zip_code
+       b.owner_id, u.first_name as owner_first_name
 from books b
 join users u on u.id = b.owner_id
 where b.is_available = true;
@@ -60,7 +60,6 @@ Then from the client:
 const { data } = await supabase
   .from('discoverable_books')
   .select('*')
-  .eq('zip_code', me.zip_code)
   .neq('owner_id', user.id)
   .order('created_at', { ascending: false })
   .limit(50);
@@ -71,7 +70,6 @@ const { data } = await supabase
 const { data } = await supabase
   .from('discoverable_books')
   .select('*')
-  .eq('zip_code', me.zip_code)
   .neq('owner_id', user.id)
   .or(`title.ilike.%${q}%,author.ilike.%${q}%`);
 ```
@@ -192,7 +190,7 @@ Cache in memory or Vercel KV for a day. Open Library is generous but don't hamme
 ```sql
 -- users
 create policy "read limited profile" on users
-  for select using (true);  -- first_name, zip_code only exposed via views/columns
+  for select using (true);  -- first_name only exposed via views/columns; email and handles server-only
 
 create policy "update own profile" on users
   for update using (id = auth.uid());
@@ -226,7 +224,7 @@ For the `users` table, because `email` is a column, you have two options: (1) hi
 
 ## Gotchas I'd expect to hit
 
-- **Zip code normalization.** Users will type `02139-1234`, `02139`, and `2139`. Normalize to 5 digits on write.
+- **Handle normalization.** Strip leading `@` on Telegram/Instagram; accept/reject `whatsapp` against E.164 (`^\+[1-9]\d{7,14}$`) after stripping spaces and dashes. Users will paste with and without prefixes.
 - **Double-accepts.** Owner accepts, then `PATCH` fires again before UI updates. The `and status = 'pending'` guard in the SQL handles it; just make sure the client treats "zero rows updated" as success (already done) rather than error.
 - **Orphaned swap requests.** If a book is deleted while a swap is pending, the FK cascade nukes the swap. That's probably fine — but consider a soft-delete on books if it starts mattering.
 - **Email bounces.** With email as the whole coordination channel, a bad email address silently breaks the flow. Postmark/Resend both expose webhooks for bounces — log them to `email_log` and surface in the UI later.

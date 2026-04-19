@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 
 type Profile = {
   first_name: string;
-  zip_code: string;
   whatsapp: string;
   telegram: string;
   instagram: string;
@@ -55,14 +54,6 @@ export function ProfileForm({ initial }: { initial: Profile }) {
         label="First name"
         value={profile.first_name}
         onChange={(v) => update("first_name", v)}
-        required
-      />
-
-      <Field
-        label="Zip code"
-        value={profile.zip_code}
-        onChange={(v) => update("zip_code", v)}
-        placeholder="02139"
         required
       />
 

@@ -11,12 +11,16 @@ Managed mostly by Supabase Auth; this table holds app-level profile data keyed t
 | Column | Type | Notes |
 |---|---|---|
 | `id` | uuid (PK) | Matches `auth.users.id` |
-| `email` | text, unique | Synced from auth |
+| `email` | text, unique | Synced from auth; never shown to other users |
 | `first_name` | text | Shown to counterparty after mutual accept |
-| `zip_code` | text | Used for discovery filter. Text, not int — leading zeros matter |
+| `whatsapp` | text, nullable | E.164 phone, e.g. `+380671234567` |
+| `telegram` | text, nullable | Username without `@` |
+| `instagram` | text, nullable | Username without `@` |
 | `created_at` | timestamptz | Default `now()` |
 
-No last name, no avatar, no bio. Add later if needed.
+At least one of `whatsapp` / `telegram` / `instagram` must be non-null. Enforced in the server route, not via a DB check constraint — simpler to evolve.
+
+No last name, no avatar, no bio, no location. Product targets Ukraine where zip codes aren't meaningful; Discovery is location-agnostic in v0. Add a `city` field only when a second-city cluster emerges organically.
 
 ---
 
@@ -92,7 +96,7 @@ Not strictly needed, but at pet-project scale it's your only record of what happ
 - **`ratings`** — no ratings.
 - **`exchanges` as a separate concept** — swap_requests already is the exchange. Collapsing the two is one of the bigger simplifications vs. the original PRD.
 - **`wishlist`** — later.
-- **`locations` table** — zip code on user is enough.
+- **`locations` table** — no location concept in v0; Discovery is global across users.
 
 ---
 
@@ -101,7 +105,7 @@ Not strictly needed, but at pet-project scale it's your only record of what happ
 A few RLS policies worth getting right early, because retrofitting them is painful:
 
 - `books`: anyone authenticated can `SELECT` where `is_available = true`; only the owner can `INSERT`, `UPDATE`, `DELETE` their own rows.
-- `users`: anyone authenticated can `SELECT` `id`, `first_name`, `zip_code` (not email); full row visible only to self and to the counterparty of an `accepted` swap.
+- `users`: anyone authenticated can `SELECT` `id`, `first_name` (not email, not handles); full row visible only to self and to the counterparty of an `accepted` swap.
 - `swap_requests`: visible to `requester_id` and `owner_id` only. Status transitions enforced server-side, not via RLS — too much logic for a policy.
 
 The email-reveal rule is the one piece of business logic that must live server-side (in a Supabase Edge Function or API route), because it's how you prevent scraping emails via the client.

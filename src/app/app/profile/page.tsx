@@ -15,7 +15,7 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from("users")
-    .select("first_name, zip_code, whatsapp, telegram, instagram")
+    .select("first_name, whatsapp, telegram, instagram")
     .eq("id", user.id)
     .single();
 
@@ -40,7 +40,6 @@ export default async function ProfilePage() {
       <ProfileForm
         initial={{
           first_name: profile?.first_name ?? "",
-          zip_code: profile?.zip_code ?? "",
           whatsapp: profile?.whatsapp ?? "",
           telegram: profile?.telegram ?? "",
           instagram: profile?.instagram ?? "",

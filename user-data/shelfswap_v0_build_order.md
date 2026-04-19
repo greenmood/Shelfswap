@@ -1,12 +1,14 @@
 # Shelfswap v0 — Build Order Checklist
 
-Two scope updates from the prior docs:
+Three scope updates from the prior docs:
 
 **Tab bar: 3 tabs.** Library · Discover · Swaps. Profile and settings live behind a gear icon on the Library tab. No standalone "Me" tab.
 
 **Handle reveal instead of email.** Users add WhatsApp, Telegram, and/or Instagram to their profile (at least one required). On accepted swap, the counterparty sees whichever handles they chose to share. Email stays under the hood for auth and transactional notifications — never shown to other users.
 
 This is actually a better coordination model than email. People reply on WhatsApp in 5 minutes and on email in 3 days. Trade-off you accept: zero visibility into how coordination goes, and WhatsApp handles are phone numbers, which are sensitive. Telegram and Instagram usernames are safer defaults — maybe order them that way in the UI.
+
+**No zip code / location filter in v0.** Product targets Ukraine, where zip codes aren't a meaningful locality signal. Discovery shows every available book across all users. If a second city cluster emerges organically, revisit with a `city` field — but don't pre-build it.
 
 ---
 
@@ -33,7 +35,7 @@ The `counterparty` API route now returns handle fields instead of `email`. Every
 - [ ] RLS policies per the API doc
 - [ ] Magic link auth: `/login` → email → `/app`
 - [ ] Auth guard redirecting unauthenticated users
-- [ ] Profile page: first name, zip, three handle inputs, save
+- [ ] Profile page: first name, three handle inputs, save
 - [ ] Gear icon in Library top-right opens profile
 
 **Don't:** write any book code, any swap code, any UI polish. Get auth solid before anything else — it's the load-bearing beam.
@@ -63,10 +65,10 @@ The `counterparty` API route now returns handle fields instead of `email`. Every
 **Goal:** you can see what's nearby, not just what's yours.
 
 - [ ] `discoverable_books` Postgres view
-- [ ] Discover feed: zip match + not-mine + available, paginated
+- [ ] Discover feed: not-mine + available, paginated
 - [ ] Search: `ilike` on title/author
 - [ ] Two filter chips: all / fiction (don't overthink)
-- [ ] Book detail screen: cover, title, author, condition, owner first name, rough distance
+- [ ] Book detail screen: cover, title, author, condition, owner first name
 - [ ] Owner profile click-through shows first name + handle previews (no email)
 
 **Don't:** propose-swap flow yet. Discover should feel solid on its own. Bugs you catch now (wrong books appearing, slow search, broken covers) are cheaper to fix without a swap flow sitting on top.
@@ -126,7 +128,7 @@ If all three: you made a thing. Decide what's next based on real usage, not spec
 
 ## Explicitly not in v0 — resist each one
 
-Borrow flow · in-app chat · ratings · counter-proposals · multi-book swaps · push notifications · native apps · wishlists · recommendations · maps · shipping · any second zip code · moderation tooling · analytics beyond Vercel's built-ins.
+Borrow flow · in-app chat · ratings · counter-proposals · multi-book swaps · push notifications · native apps · wishlists · recommendations · maps · shipping · city filtering · moderation tooling · analytics beyond Vercel's built-ins.
 
 All reasonable eventually. None is the thing blocking your first real swap.
 
@@ -142,6 +144,6 @@ Rough rules for what deserves build time later:
 - **"I don't want to share my WhatsApp" →** in-app messaging (you'll regret this; build it only when repeatedly asked)
 - **"Is this person trustworthy?" →** ratings
 - **"Tell me when someone nearby lists X" →** wishlist + email alerts
-- **"I want to use this in [other neighborhood]" →** multi-zip; the moment a second cluster emerges organically, lean in
+- **"I want to use this in [other city]" →** add a `city` field and per-city filter; the moment a second cluster emerges organically, lean in
 
 If nobody asks for any of these — that's also a signal. Maybe v0 is the right shape of product and what it needs is more users, not more features.

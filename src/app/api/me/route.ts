@@ -3,16 +3,10 @@ import { createClient } from "@/lib/supabase/server";
 
 type ProfilePayload = {
   first_name?: string;
-  zip_code?: string;
   whatsapp?: string | null;
   telegram?: string | null;
   instagram?: string | null;
 };
-
-function normalizeZip(raw: string): string | null {
-  const digits = raw.replace(/\D/g, "");
-  return digits.length >= 5 ? digits.slice(0, 5) : null;
-}
 
 function normalizeWhatsapp(raw: string): string | null {
   // Strip spaces, dashes, parens; keep leading + if present.
@@ -46,14 +40,6 @@ export async function PATCH(request: NextRequest) {
   if (!firstName) {
     return NextResponse.json(
       { error: "first_name_required" },
-      { status: 400 },
-    );
-  }
-
-  const zip = body.zip_code ? normalizeZip(body.zip_code) : null;
-  if (!zip) {
-    return NextResponse.json(
-      { error: "invalid_zip", message: "Zip must be at least 5 digits." },
       { status: 400 },
     );
   }
@@ -92,7 +78,6 @@ export async function PATCH(request: NextRequest) {
     .from("users")
     .update({
       first_name: firstName,
-      zip_code: zip,
       whatsapp,
       telegram,
       instagram,
