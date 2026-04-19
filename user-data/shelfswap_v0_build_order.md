@@ -85,7 +85,7 @@ The complicated week. Budget it accordingly — this is where half the interesti
 - [x] My Swaps tab: incoming/outgoing segmented control, status pills
 - [x] Swap detail screen (pending state)
 - [x] `PATCH /api/swaps/:id` with accept/decline/cancel state machine
-- [ ] Transactional email on status change
+- [x] Transactional email on status change
 - [ ] Handle reveal via `/api/swaps/:id/counterparty` — only when status in (`accepted`, `completed`)
 - [ ] Swap detail (accepted state): handles with tap-to-open deep links
 - [ ] Mark complete: transactional status flip + both books to `is_available = false`
