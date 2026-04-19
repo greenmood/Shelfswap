@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { BookCover } from "@/components/book-cover";
 import { StatusPill, type SwapStatus } from "@/components/status-pill";
+import { SwapActions } from "./swap-actions";
 
 type BookRef = {
   id: string;
@@ -156,11 +157,11 @@ export default async function SwapDetailPage({
         </div>
       </section>
 
-      {swap.status === "pending" && (
-        <p className="mt-6 text-xs text-neutral-500">
-          Accept, decline, and cancel actions land in the next step.
-        </p>
-      )}
+      <SwapActions
+        swapId={swap.id}
+        status={swap.status}
+        role={isOwner ? "owner" : "requester"}
+      />
     </main>
   );
 }
