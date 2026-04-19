@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shelfswap v0 — Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --cream: #faf6ee;
+    --cream-dim: #f3ede0;
+    --paper: #ffffff;
+    --ink: #1a1814;
+    --muted: #78726a;
+    --border: #e4ddcd;
+    --divider: #efe9db;
+    --placeholder: #e8e1cf;
+    --accent: #7c2d12;
+    --accent-soft: #fdf1e4;
+    --pending-bg: #fff5db;
+    --pending-fg: #8a5a00;
+    --accepted-bg: #e3efd9;
+    --accepted-fg: #2e5a1f;
+  }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Instrument Sans', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+    padding: 64px 32px 120px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(to right, rgba(26,24,20,0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(26,24,20,0.025) 1px, transparent 1px);
+    background-size: 28px 28px;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* ---------- Page header ---------- */
+  .page-header {
+    max-width: 1240px;
+    margin: 0 auto 72px;
+  }
+
+  .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .page-header h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 56px;
+    line-height: 1.02;
+    letter-spacing: -0.025em;
+    margin-bottom: 20px;
+    max-width: 720px;
+  }
+
+  .page-header h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+
+  .page-header p {
+    color: var(--muted);
+    max-width: 560px;
+    font-size: 16px;
+    line-height: 1.55;
+  }
+
+  .flow-strip {
+    margin-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.02em;
+  }
+
+  .flow-strip span { white-space: nowrap; }
+  .flow-strip span.sep { opacity: 0.5; }
+
+  /* ---------- Grid ---------- */
+  .grid {
+    max-width: 1240px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 64px 40px;
+    justify-items: center;
+  }
+
+  .screen {
+    display: flex;
+    flex-direction: column;
+    width: 320px;
+  }
+
+  .screen-head {
+    margin-bottom: 18px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .screen-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .screen-title {
+    font-family: 'Fraunces', serif;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .note {
+    margin-top: 18px;
+    padding-left: 14px;
+    border-left: 2px solid var(--border);
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  .note strong { color: var(--ink); font-weight: 600; }
+
+  /* ---------- Phone frame ---------- */
+  .phone {
+    width: 320px;
+    height: 620px;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 28px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 2px rgba(26,24,20,0.04), 0 12px 32px -12px rgba(26,24,20,0.08);
+  }
+
+  .status-bar {
+    height: 22px;
+    padding: 6px 22px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  .status-bar .dots { letter-spacing: 1px; }
+
+  .top-nav {
+    padding: 10px 18px 8px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    flex-shrink: 0;
+  }
+
+  .top-nav .back {
+    width: 22px; height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 20px;
+    line-height: 1;
+    margin-left: -4px;
+  }
+
+  .top-nav .title {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  .top-nav .count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  .content {
+    flex: 1;
+    overflow: hidden;
+    padding: 4px 18px 12px;
+    position: relative;
+  }
+
+  /* ---------- Tab bar ---------- */
+  .tab-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--divider);
+    padding: 8px 0 12px;
+    flex-shrink: 0;
+    background: var(--paper);
+  }
+
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  .tab-glyph {
+    width: 18px; height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    opacity: 0.65;
+  }
+
+  .tab-glyph svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+
+  .tab.active { color: var(--ink); }
+  .tab.active .tab-glyph { color: var(--ink); opacity: 1; }
+
+  /* ---------- Book row ---------- */
+  .book-row {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--divider);
+    align-items: flex-start;
+  }
+  .book-row:last-child { border-bottom: none; }
+
+  .cover {
+    background: linear-gradient(135deg, #ede4cd 0%, #d9cfb5 100%);
+    border-radius: 2px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .cover.xs { width: 38px; height: 54px; }
+  .cover.sm { width: 46px; height: 64px; }
+  .cover.md { width: 64px; height: 90px; }
+  .cover.lg { width: 118px; height: 166px; box-shadow: 0 4px 16px -4px rgba(26,24,20,0.2); }
+
+  .cover::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(100deg, transparent 55%, rgba(255,255,255,0.25) 60%, transparent 65%);
+    border-radius: inherit;
+  }
+
+  /* stylistic spine lines for variety */
+  .cover.v2 { background: linear-gradient(135deg, #c8b89a 0%, #a89572 100%); }
+  .cover.v3 { background: linear-gradient(135deg, #d4c8ae 0%, #b8a98a 100%); }
+  .cover.v4 { background: linear-gradient(135deg, #b8a378 0%, #8d7a52 100%); }
+  .cover.v5 { background: linear-gradient(135deg, #e0d3b3 0%, #c2b48a 100%); }
+
+  .book-meta { flex: 1; min-width: 0; padding-top: 2px; }
+  .book-title {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 1.2;
+    margin-bottom: 3px;
+  }
+  .book-author {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .book-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* ---------- Pills & chips ---------- */
+  .pill {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: var(--divider);
+    color: var(--muted);
+    vertical-align: middle;
+  }
+  .pill.accent { background: var(--accent-soft); color: var(--accent); }
+  .pill.pending { background: var(--pending-bg); color: var(--pending-fg); }
+  .pill.accepted { background: var(--accepted-bg); color: var(--accepted-fg); }
+  .pill.dim { background: var(--cream-dim); color: var(--muted); }
+
+  .chips {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
+  .chip {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    background: var(--cream-dim);
+    color: var(--muted);
+    border-radius: 12px;
+  }
+  .chip.active { background: var(--ink); color: var(--paper); }
+
+  /* ---------- Form elements ---------- */
+  .input {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--cream);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .input .placeholder { color: var(--muted); }
+  .input .glyph { color: var(--muted); font-size: 14px; }
+
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 13px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    letter-spacing: -0.01em;
+  }
+  .btn.ghost {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--border);
+  }
+  .btn.small { padding: 8px 12px; font-size: 12px; width: auto; }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin: 14px 0 6px;
+  }
+
+  /* ---------- Library stats ---------- */
+  .lib-stats {
+    display: flex;
+    gap: 16px;
+    padding: 4px 0 12px;
+    border-bottom: 1px solid var(--divider);
+    margin-bottom: 6px;
+  }
+  .lib-stat .num {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .lib-stat .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  /* ---------- FAB ---------- */
+  .fab {
+    position: absolute;
+    bottom: 14px;
+    right: 14px;
+    width: 46px; height: 46px;
+    background: var(--ink);
+    color: var(--paper);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    line-height: 1;
+    box-shadow: 0 6px 16px -4px rgba(26,24,20,0.3);
+  }
+
+  /* ---------- Book detail ---------- */
+  .detail-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 12px 0 6px;
+    text-align: center;
+  }
+  .detail-title {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.15;
+    margin: 16px 0 4px;
+    letter-spacing: -0.015em;
+  }
+  .detail-author {
+    font-size: 13px;
+    color: var(--muted);
+    font-style: italic;
+    margin-bottom: 12px;
+  }
+  .detail-pills {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+  .owner-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--cream);
+    border-radius: 10px;
+    margin-bottom: 14px;
+  }
+  .avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #d6c8a6 0%, #b39d6f 100%);
+    flex-shrink: 0;
+  }
+  .owner-name { font-size: 13px; font-weight: 500; }
+  .owner-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  /* ---------- Propose swap ---------- */
+  .target-card {
+    padding: 12px;
+    background: var(--accent-soft);
+    border-radius: 10px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+  .target-card .cover { flex-shrink: 0; }
+  .target-card .label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .radio-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--divider);
+  }
+  .radio-row:last-child { border-bottom: none; }
+  .radio {
+    width: 16px; height: 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .radio.checked {
+    border-color: var(--ink);
+  }
+  .radio.checked::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    border-radius: 50%;
+    background: var(--ink);
+  }
+
+  /* ---------- My Swaps ---------- */
+  .seg {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: var(--cream-dim);
+    border-radius: 8px;
+    padding: 3px;
+    margin: 4px 0 12px;
+  }
+  .seg-item {
+    text-align: center;
+    padding: 7px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    border-radius: 6px;
+    letter-spacing: 0.02em;
+  }
+  .seg-item.active {
+    background: var(--paper);
+    color: var(--ink);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+
+  .swap-card {
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: var(--paper);
+  }
+  .swap-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .swap-head .who {
+    font-size: 13px;
+  }
+  .swap-head .who strong { font-weight: 600; }
+
+  .swap-pair {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .swap-half {
+    flex: 1;
+    min-width: 0;
+  }
+  .swap-arrow {
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+    font-size: 12px;
+    flex-shrink: 0;
+  }
+  .swap-book-title {
+    font-family: 'Fraunces', serif;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.2;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .swap-book-author {
+    font-size: 10.5px;
+    color: var(--muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ---------- Swap accepted ---------- */
+  .banner {
+    padding: 14px 12px;
+    background: var(--accepted-bg);
+    border-radius: 10px;
+    margin-bottom: 14px;
+  }
+  .banner-title {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--accepted-fg);
+    margin-bottom: 2px;
+  }
+  .banner-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accepted-fg);
+    opacity: 0.85;
+  }
+
+  .contact-block {
+    padding: 12px;
+    background: var(--accent-soft);
+    border-radius: 10px;
+    margin-bottom: 14px;
+  }
+  .contact-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 6px;
+  }
+  .contact-name {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 2px;
+  }
+  .contact-email {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 10px;
+    background: var(--paper);
+    border-radius: 6px;
+    margin-top: 8px;
+  }
+  .copy-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .handoff-stack > * + * { margin-top: 10px; }
+
+  /* ---------- Footer ---------- */
+  .page-footer {
+    max-width: 1240px;
+    margin: 104px auto 0;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 0.05em;
+  }
+
+  @media (max-width: 760px) {
+    body { padding: 32px 16px 80px; }
+    .page-header h1 { font-size: 36px; }
+    .grid { gap: 48px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="kicker">Shelfswap · v0 · wireframes</div>
+  <h1>Core screens,<br><em>low fidelity.</em></h1>
+  <p>Seven screens covering the whole loop — build a library, find a book, propose a swap, agree a handoff, close it out. Real copy, deliberately unpolished visuals. The goal is to argue about structure, not colors.</p>
+  <div class="flow-strip">
+    <span>01 Library</span><span class="sep">→</span>
+    <span>02 Add book</span><span class="sep">→</span>
+    <span>03 Discover</span><span class="sep">→</span>
+    <span>04 Book detail</span><span class="sep">→</span>
+    <span>05 Propose swap</span><span class="sep">→</span>
+    <span>06 My swaps</span><span class="sep">→</span>
+    <span>07 Accepted / reveal</span>
+  </div>
+</header>
+
+<main class="grid">
+
+  <!-- ============ 1. MY LIBRARY ============ -->
+  <section class="screen">
+    <div class="screen-head">
+      <span class="screen-num">01</span>
+      <span class="screen-title">My library</span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span class="dots">● ● ●</span></div>
+      <div class="top-nav">
+        <span class="title">My library</span>
+        <span class="count">12 books</span>
+      </div>
+      <div class="content">
+        <div class="lib-stats">
+          <div class="lib-stat"><div class="num">12</div><div class="lbl">Owned</div></div>
+          <div class="lib-stat"><div class="num">8</div><div class="lbl">Available</div></div>
+          <div class="lib-stat"><div class="num">2</div><div class="lbl">In swap</div></div>
+        </div>
+
+        <div class="book-row">
+          <div class="cover xs"></div>
+          <div class="book-meta">
+            <div class="book-title">Klara and the Sun</div>
+            <div class="book-author">Kazuo Ishiguro</div>
+            <span class="pill accent">Available</span>
+          </div>
+        </div>
+        <div class="book-row">
+          <div class="cover xs v2"></div>
+          <div class="book-meta">
+            <div class="book-title">Piranesi</div>
+            <div class="book-author">Susanna Clarke</div>
+            <span class="pill accent">Available</span>
+          </div>
+        </div>
+        <div class="book-row">
+          <div class="cover xs v3"></div>
+          <div class="book-meta">
+            <div class="book-title">The Overstory</div>
+            <div class="book-author">Richard Powers</div>
+            <span class="pill accent">Available</span>
+          </div>
+        </div>
+        <div class="book-row">
+          <div class="cover xs v4"></div>
+          <div class="book-meta">
+            <div class="book-title">Demon Copperhead</div>
+            <div class="book-author">Barbara Kingsolver</div>
+            <span class="pill pending">In swap</span>
+          </div>
+        </div>
+        <div class="book-row">
+          <div class="cover xs v5"></div>
+          <div class="book-meta">
+            <div class="book-title">Trust</div>
+            <div class="book-author">Hernan Diaz</div>
+            <span class="pill dim">Not listed</span>
+          </div>
+        </div>
+        <div class="fab">+</div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active">
+          <div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>
+          Library
+        </div>
+        <div class="tab">
+          <div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>
+          Discover
+        </div>
+        <div class="tab">
+          <div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>
+          Swaps
+        </div>
+        <div class="tab">
+          <div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>
+          Me
+        </div>
+      </div>
+    </div>
+    <div class="note"><strong>Root tab.</strong> Tap a book to toggle availability or edit condition. FAB opens <em>Add Book</em>. Stats row is nice-to-have — drop if build time is tight.</div>
+  </section>
+
+  <!-- ============ 2. ADD BOOK ============ -->
+  <section class="screen">
+    <div class="screen-head">
+      <span class="screen-num">02</span>
+      <span class="screen-title">Add book</span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span class="dots">● ● ●</span></div>
+      <div class="top-nav">
+        <span class="back">←</span>
+        <span class="title">Add a book</span>
+      </div>
+      <div class="content">
+        <div class="input">
+          <span class="glyph">⌕</span>
+          <span>Trust hernan diaz</span>
+        </div>
+        <div class="section-label">3 matches via Open Library</div>
+
+        <div class="book-row" style="background:var(--cream);border-radius:8px;padding:10px;margin:0 -4px;border:1px solid var(--border);">
+          <div class="cover sm v5"></div>
+          <div class="book-meta">
+            <div class="book-title">Trust</div>
+            <div class="book-author">Hernan Diaz · 2022</div>
+            <div class="book-sub">Pulitzer · Fiction</div>
+          </div>
+          <div class="radio checked" style="margin-top:22px;"></div>
+        </div>
+        <div class="book-row">
+          <div class="cover sm v2"></div>
+          <div class="book-meta">
+            <div class="book-title">Trust</div>
+            <div class="book-author">Daniel Silva · 2019</div>
+            <div class="book-sub">Thriller</div>
+          </div>
+          <div class="radio" style="margin-top:22px;"></div>
+        </div>
+        <div class="book-row">
+          <div class="cover sm v3"></div>
+          <div class="book-meta">
+            <div class="book-title">Trust Exercise</div>
+            <div class="book-author">Susan Choi · 2019</div>
+          </div>
+          <div class="radio" style="margin-top:22px;"></div>
+        </div>
+
+        <div class="section-label">Condition</div>
+        <div class="chips">
+          <span class="chip active">Good</span>
+          <span class="chip">Worn</span>
+        </div>
+
+        <div style="position:absolute;bottom:14px;left:18px;right:18px;">
+          <button class="btn">Add to my library</button>
+          <div style="text-align:center;margin-top:10px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;">Or enter manually</div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>Library</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>Discover</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>Swaps</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
+      </div>
+    </div>
+    <div class="note"><strong>Autocomplete via Open Library</strong> proxied through <code>/api/book-lookup</code>. Manual entry escape hatch for obscure titles, foreign editions, or zines.</div>
+  </section>
+
+  <!-- ============ 3. DISCOVER ============ -->
+  <section class="screen">
+    <div class="screen-head">
+      <span class="screen-num">03</span>
+      <span class="screen-title">Discover</span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span class="dots">● ● ●</span></div>
+      <div class="top-nav">
+        <span class="title">Discover</span>
+        <span class="count">02139</span>
+      </div>
+      <div class="content">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:10px;">58 available near you</div>
+
+        <div class="chips">
+          <span class="chip active">All</span>
+          <span class="chip">Fiction</span>
+          <span class="chip">Non-fiction</span>
+          <span class="chip">Near me</span>
+        </div>
+
+        <div class="book-row">
+          <div class="cover sm"></div>
+          <div class="book-meta">
+            <div class="book-title">Sea of Tranquility</div>
+            <div class="book-author">Emily St. John Mandel</div>
+            <div class="book-sub">Maya · 0.3 mi</div>
+          </div>
+        </div>
+        <div class="book-row">
+          <div class="cover sm v2"></div>
+          <div class="book-meta">
+            <div class="book-title">Tomorrow, and Tomorrow, and Tomorrow</div>
+            <div class="book-author">Gabrielle Zevin</div>
+            <div class="book-sub">Jordan · 0.5 mi</div>
+          </div>
+        </div>
+        <div class="book-row">
+          <div class="cover sm v3"></div>
+          <div class="book-meta">
+            <div class="book-title">The Vegetarian</div>
+            <div class="book-author">Han Kang</div>
+            <div class="book-sub">Priya · 0.8 mi</div>
+          </div>
+        </div>
+        <div class="book-row">
+          <div class="cover sm v4"></div>
+          <div class="book-meta">
+            <div class="book-title">Intermezzo</div>
+            <div class="book-author">Sally Rooney</div>
+            <div class="book-sub">Alex · 1.1 mi</div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>Library</div>
+        <div class="tab active"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>Discover</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>Swaps</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
+      </div>
+    </div>
+    <div class="note"><strong>Filter = zip match + <code>is_available = true</code> + not me.</strong> Distance is zip-centroid approximation, not real geolocation. No map view in v0.</div>
+  </section>
+
+  <!-- ============ 4. BOOK DETAIL ============ -->
+  <section class="screen">
+    <div class="screen-head">
+      <span class="screen-num">04</span>
+      <span class="screen-title">Book detail</span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span class="dots">● ● ●</span></div>
+      <div class="top-nav">
+        <span class="back">←</span>
+        <span class="title">Book</span>
+      </div>
+      <div class="content">
+        <div class="detail-hero">
+          <div class="cover lg"></div>
+          <div class="detail-title">Sea of Tranquility</div>
+          <div class="detail-author">Emily St. John Mandel</div>
+          <div class="detail-pills">
+            <span class="pill">Fiction</span>
+            <span class="pill accent">Good condition</span>
+          </div>
+        </div>
+
+        <div class="owner-card">
+          <div class="avatar"></div>
+          <div>
+            <div class="owner-name">Offered by Maya</div>
+            <div class="owner-sub">02139 · 0.3 mi away</div>
+          </div>
+        </div>
+
+        <div style="position:absolute;bottom:14px;left:18px;right:18px;">
+          <button class="btn">Propose a swap</button>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>Library</div>
+        <div class="tab active"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>Discover</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>Swaps</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
+      </div>
+    </div>
+    <div class="note"><strong>One CTA only.</strong> No wishlist, no ratings, no save-for-later. Owner info is first name + rough distance — exact address never exposed.</div>
+  </section>
+
+  <!-- ============ 5. PROPOSE SWAP ============ -->
+  <section class="screen">
+    <div class="screen-head">
+      <span class="screen-num">05</span>
+      <span class="screen-title">Propose swap</span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span class="dots">● ● ●</span></div>
+      <div class="top-nav">
+        <span class="back">←</span>
+        <span class="title">Propose a swap</span>
+      </div>
+      <div class="content">
+        <div class="target-card">
+          <div class="cover sm"></div>
+          <div>
+            <div class="label">You want</div>
+            <div class="book-title">Sea of Tranquility</div>
+            <div class="book-author">Emily St. John Mandel</div>
+            <div class="book-sub" style="margin-top:4px;">from Maya</div>
+          </div>
+        </div>
+
+        <div class="section-label">Offer in return (pick one)</div>
+
+        <div class="radio-row">
+          <div class="radio checked"></div>
+          <div class="cover xs"></div>
+          <div class="book-meta">
+            <div class="book-title">Klara and the Sun</div>
+            <div class="book-author">Kazuo Ishiguro</div>
+          </div>
+        </div>
+        <div class="radio-row">
+          <div class="radio"></div>
+          <div class="cover xs v2"></div>
+          <div class="book-meta">
+            <div class="book-title">Piranesi</div>
+            <div class="book-author">Susanna Clarke</div>
+          </div>
+        </div>
+        <div class="radio-row">
+          <div class="radio"></div>
+          <div class="cover xs v3"></div>
+          <div class="book-meta">
+            <div class="book-title">The Overstory</div>
+            <div class="book-author">Richard Powers</div>
+          </div>
+        </div>
+
+        <div style="position:absolute;bottom:14px;left:18px;right:18px;">
+          <button class="btn">Send request</button>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>Library</div>
+        <div class="tab active"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>Discover</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>Swaps</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
+      </div>
+    </div>
+    <div class="note"><strong>List = my available books only.</strong> Server re-validates ownership + availability on submit. Empty state here (no available books) should prompt user to list something first.</div>
+  </section>
+
+  <!-- ============ 6. MY SWAPS ============ -->
+  <section class="screen">
+    <div class="screen-head">
+      <span class="screen-num">06</span>
+      <span class="screen-title">My swaps</span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span class="dots">● ● ●</span></div>
+      <div class="top-nav">
+        <span class="title">Swaps</span>
+      </div>
+      <div class="content">
+        <div class="seg">
+          <div class="seg-item active">Incoming · 2</div>
+          <div class="seg-item">Outgoing · 1</div>
+        </div>
+
+        <div class="swap-card">
+          <div class="swap-head">
+            <div class="who"><strong>Jordan</strong> wants to swap</div>
+            <span class="pill pending">Pending</span>
+          </div>
+          <div class="swap-pair">
+            <div class="swap-half">
+              <div class="swap-book-title">Piranesi</div>
+              <div class="swap-book-author">Susanna Clarke</div>
+            </div>
+            <div class="swap-arrow">⇄</div>
+            <div class="swap-half">
+              <div class="swap-book-title">Tomorrow, and Tomorrow…</div>
+              <div class="swap-book-author">Gabrielle Zevin</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="swap-card" style="border-color:var(--accepted-fg);background:linear-gradient(to bottom,#f3faee,var(--paper));">
+          <div class="swap-head">
+            <div class="who">with <strong>Maya</strong></div>
+            <span class="pill accepted">Accepted</span>
+          </div>
+          <div class="swap-pair">
+            <div class="swap-half">
+              <div class="swap-book-title">Klara and the Sun</div>
+              <div class="swap-book-author">Kazuo Ishiguro</div>
+            </div>
+            <div class="swap-arrow">⇄</div>
+            <div class="swap-half">
+              <div class="swap-book-title">Sea of Tranquility</div>
+              <div class="swap-book-author">Emily St. John Mandel</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="swap-card">
+          <div class="swap-head">
+            <div class="who"><strong>Priya</strong> wants to swap</div>
+            <span class="pill pending">Pending</span>
+          </div>
+          <div class="swap-pair">
+            <div class="swap-half">
+              <div class="swap-book-title">The Overstory</div>
+              <div class="swap-book-author">Richard Powers</div>
+            </div>
+            <div class="swap-arrow">⇄</div>
+            <div class="swap-half">
+              <div class="swap-book-title">The Vegetarian</div>
+              <div class="swap-book-author">Han Kang</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>Library</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>Discover</div>
+        <div class="tab active"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>Swaps</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
+      </div>
+    </div>
+    <div class="note"><strong>Segmented control</strong> for incoming vs outgoing. Status badges: pending, accepted, completed, declined, cancelled. Tap any card to open its detail.</div>
+  </section>
+
+  <!-- ============ 7. SWAP ACCEPTED ============ -->
+  <section class="screen">
+    <div class="screen-head">
+      <span class="screen-num">07</span>
+      <span class="screen-title">Swap accepted — email reveal</span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span class="dots">● ● ●</span></div>
+      <div class="top-nav">
+        <span class="back">←</span>
+        <span class="title">Swap with Maya</span>
+      </div>
+      <div class="content">
+        <div class="banner">
+          <div class="banner-title">It's a match</div>
+          <div class="banner-sub">Coordinate the handoff and mark complete when done</div>
+        </div>
+
+        <div class="swap-pair" style="background:var(--cream);padding:12px;border-radius:10px;margin-bottom:14px;">
+          <div class="swap-half">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">You give</div>
+            <div class="swap-book-title">Klara and the Sun</div>
+            <div class="swap-book-author">Kazuo Ishiguro</div>
+          </div>
+          <div class="swap-arrow">⇄</div>
+          <div class="swap-half">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">You get</div>
+            <div class="swap-book-title">Sea of Tranquility</div>
+            <div class="swap-book-author">Emily St. J. Mandel</div>
+          </div>
+        </div>
+
+        <div class="contact-block">
+          <div class="contact-label">Contact Maya</div>
+          <div class="contact-name">Maya</div>
+          <div class="contact-email">
+            <span>maya.l@gmail.com</span>
+            <span class="copy-btn">Copy</span>
+          </div>
+        </div>
+
+        <div class="handoff-stack">
+          <button class="btn">Mark complete</button>
+          <button class="btn ghost">Cancel swap</button>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>Library</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>Discover</div>
+        <div class="tab active"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>Swaps</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
+      </div>
+    </div>
+    <div class="note"><strong>The only screen where the counterparty's email is shown.</strong> Gated server-side by <code>/api/swaps/:id/counterparty</code>. Before accept → 404. Mark complete flips both books to unavailable.</div>
+  </section>
+
+</main>
+
+<footer class="page-footer">
+  <span>SHELFSWAP · V0 · WIREFRAMES</span>
+  <span>APRIL 2026</span>
+</footer>
+
+</body>
+</html>
