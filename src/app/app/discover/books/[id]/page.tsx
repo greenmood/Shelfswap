@@ -60,18 +60,28 @@ export default async function DiscoverBookPage({
         </div>
       </div>
 
-      <dl className="mt-8 divide-y divide-neutral-200 rounded-md border border-neutral-200 text-sm dark:divide-neutral-800 dark:border-neutral-800">
+      <div className="mt-8 divide-y divide-neutral-200 rounded-md border border-neutral-200 text-sm dark:divide-neutral-800 dark:border-neutral-800">
         <div className="flex items-center justify-between px-4 py-3">
-          <dt className="text-neutral-500">Condition</dt>
-          <dd className="font-medium">
+          <span className="text-neutral-500">Condition</span>
+          <span className="font-medium">
             {book.condition === "good" ? "Good" : "Worn"}
-          </dd>
+          </span>
         </div>
-        <div className="flex items-center justify-between px-4 py-3">
-          <dt className="text-neutral-500">Owner</dt>
-          <dd className="font-medium">{book.owner_first_name ?? "—"}</dd>
-        </div>
-      </dl>
+        <Link
+          href={`/app/users/${book.owner_id}`}
+          className="flex items-center justify-between px-4 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-900"
+        >
+          <span className="text-neutral-500">Owner</span>
+          <span className="flex items-center gap-1 font-medium">
+            <span className="underline underline-offset-4">
+              {book.owner_first_name ?? "—"}
+            </span>
+            <span aria-hidden className="text-neutral-400">
+              ›
+            </span>
+          </span>
+        </Link>
+      </div>
     </main>
   );
 }
