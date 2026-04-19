@@ -47,8 +47,8 @@ The `counterparty` API route now returns handle fields instead of `email`. Every
 **Goal:** you personally can build a real catalog. If you stop here, you have a working personal book tracker.
 
 - [x] `/api/book-lookup` proxy to Open Library (cache 24h)
-- [ ] Add book: search → pick result → set condition → save
-- [ ] Manual entry fallback path
+- [x] Add book: search → pick result → set condition → save
+- [x] Manual entry fallback path
 - [ ] Library list: covers, titles, author, availability pill
 - [ ] One-tap availability toggle
 - [ ] Edit and delete
