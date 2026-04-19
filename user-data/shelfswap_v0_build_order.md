@@ -29,14 +29,14 @@ The `counterparty` API route now returns handle fields instead of `email`. Every
 
 **Goal:** you can sign in, save a profile with handles, and land on an empty library.
 
-- [ ] Next.js (App Router) project, deployed blank to Vercel
-- [ ] Supabase project created, env vars wired
-- [ ] Schema: `users`, `books`, `swap_requests`, `email_log` (+ handle fields)
-- [ ] RLS policies per the API doc
-- [ ] Magic link auth: `/login` → email → `/app`
-- [ ] Auth guard redirecting unauthenticated users
-- [ ] Profile page: first name, three handle inputs, save
-- [ ] Gear icon in Library top-right opens profile
+- [x] Next.js (App Router) project, deployed blank to Vercel
+- [x] Supabase project created, env vars wired
+- [x] Schema: `users`, `books`, `swap_requests`, `email_log` (+ handle fields)
+- [x] RLS policies per the API doc
+- [x] Magic link auth: `/login` → email → `/app`
+- [x] Auth guard redirecting unauthenticated users
+- [x] Profile page: first name, three handle inputs, save
+- [x] Gear icon in Library top-right opens profile
 
 **Don't:** write any book code, any swap code, any UI polish. Get auth solid before anything else — it's the load-bearing beam.
 
@@ -46,7 +46,7 @@ The `counterparty` API route now returns handle fields instead of `email`. Every
 
 **Goal:** you personally can build a real catalog. If you stop here, you have a working personal book tracker.
 
-- [ ] `/api/book-lookup` proxy to Open Library (cache 24h)
+- [x] `/api/book-lookup` proxy to Open Library (cache 24h)
 - [ ] Add book: search → pick result → set condition → save
 - [ ] Manual entry fallback path
 - [ ] Library list: covers, titles, author, availability pill
