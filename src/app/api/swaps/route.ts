@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendSwapRequestEmail } from "@/lib/email/send";
 
 type CreateSwapBody = {
   requested_book_id?: string;
@@ -132,5 +133,87 @@ export async function POST(request: NextRequest) {
     return err("insert_failed", insertErr.message, 500);
   }
 
+  // Best-effort: notify the owner and log. Both are side effects; failures
+  // here don't roll back the swap insert.
+  await notifyOwner({
+    admin,
+    swapId: inserted.id,
+    ownerId: requested.owner_id,
+    requesterId: user.id,
+    requestedBookId: requested_book_id,
+    offeredBookId: offered_book_id,
+    appOrigin: new URL(request.url).origin,
+  });
+
   return NextResponse.json({ id: inserted.id }, { status: 201 });
+}
+
+async function notifyOwner(args: {
+  admin: ReturnType<typeof createAdminClient>;
+  swapId: string;
+  ownerId: string;
+  requesterId: string;
+  requestedBookId: string;
+  offeredBookId: string;
+  appOrigin: string;
+}) {
+  const {
+    admin,
+    swapId,
+    ownerId,
+    requesterId,
+    requestedBookId,
+    offeredBookId,
+    appOrigin,
+  } = args;
+
+  let emailOk = false;
+  try {
+    const [ownerUser, ownerProfile, requesterProfile, titles] =
+      await Promise.all([
+        admin.from("users").select("email").eq("id", ownerId).single(),
+        admin
+          .from("public_profiles")
+          .select("first_name")
+          .eq("id", ownerId)
+          .single(),
+        admin
+          .from("public_profiles")
+          .select("first_name")
+          .eq("id", requesterId)
+          .single(),
+        admin
+          .from("books")
+          .select("id, title")
+          .in("id", [requestedBookId, offeredBookId]),
+      ]);
+
+    const ownerEmail = ownerUser.data?.email;
+    const requestedTitle =
+      titles.data?.find((b) => b.id === requestedBookId)?.title ?? "a book";
+    const offeredTitle =
+      titles.data?.find((b) => b.id === offeredBookId)?.title ?? "a book";
+
+    if (ownerEmail) {
+      await sendSwapRequestEmail({
+        to: ownerEmail,
+        ownerFirstName: ownerProfile.data?.first_name ?? null,
+        requesterFirstName: requesterProfile.data?.first_name ?? null,
+        requestedTitle,
+        offeredTitle,
+        appUrl: `${appOrigin}/app`,
+      });
+      emailOk = true;
+    }
+  } catch (sendErr) {
+    console.error("[swaps] notify owner failed:", sendErr);
+  }
+
+  // Log regardless — a row with kind=swap_request_failed tells us the send
+  // attempt happened but didn't succeed.
+  await admin.from("email_log").insert({
+    to_user_id: ownerId,
+    kind: emailOk ? "swap_request" : "swap_request_failed",
+    swap_request_id: swapId,
+  });
 }
