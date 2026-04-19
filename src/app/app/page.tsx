@@ -72,19 +72,26 @@ export default async function AppHome() {
             key={book.id}
             className="flex items-start gap-3 rounded-md border border-neutral-200 p-3 dark:border-neutral-800"
           >
-            <BookCover
-              cover_url={book.cover_url}
-              alt={book.title}
-              size="md"
-            />
-            <div className="min-w-0 flex-1 space-y-1">
-              <p className="line-clamp-2 text-sm font-medium">{book.title}</p>
-              {book.author && (
-                <p className="line-clamp-1 text-xs text-neutral-500">
-                  {book.author}
+            <Link
+              href={`/app/books/${book.id}`}
+              className="flex min-w-0 flex-1 items-start gap-3 rounded hover:opacity-80"
+            >
+              <BookCover
+                cover_url={book.cover_url}
+                alt={book.title}
+                size="md"
+              />
+              <div className="min-w-0 flex-1 space-y-1">
+                <p className="line-clamp-2 text-sm font-medium">
+                  {book.title}
                 </p>
-              )}
-            </div>
+                {book.author && (
+                  <p className="line-clamp-1 text-xs text-neutral-500">
+                    {book.author}
+                  </p>
+                )}
+              </div>
+            </Link>
             <AvailabilityToggle
               bookId={book.id}
               isAvailable={book.is_available}

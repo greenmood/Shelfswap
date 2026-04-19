@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { BookCover } from "@/components/book-cover";
+import { ConditionRadio } from "@/components/condition-radio";
 import { addBook, type AddBookInput } from "./actions";
 
 type SearchResult = {
@@ -274,42 +275,6 @@ export function AddBookForm() {
         </button>
       </div>
     </div>
-  );
-}
-
-function ConditionRadio({
-  value,
-  onChange,
-}: {
-  value: "good" | "worn";
-  onChange: (v: "good" | "worn") => void;
-}) {
-  return (
-    <fieldset className="space-y-2">
-      <legend className="text-sm font-medium">Condition</legend>
-      <div className="flex gap-4">
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="radio"
-            name="condition"
-            value="good"
-            checked={value === "good"}
-            onChange={() => onChange("good")}
-          />
-          Good
-        </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="radio"
-            name="condition"
-            value="worn"
-            checked={value === "worn"}
-            onChange={() => onChange("worn")}
-          />
-          Worn
-        </label>
-      </div>
-    </fieldset>
   );
 }
 
