@@ -52,7 +52,7 @@ The `counterparty` API route now returns handle fields instead of `email`. Every
 - [x] Library list: covers, titles, author, availability pill
 - [x] One-tap availability toggle
 - [x] Edit and delete
-- [ ] Empty state with "Add your first book" CTA
+- [x] Empty state with "Add your first book" CTA
 
 **Don't:** Discover, requests, any notification work.
 

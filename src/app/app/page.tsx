@@ -57,51 +57,64 @@ export default async function AppHome() {
         )}
       </div>
 
-      <div className="mt-6">
-        <Link
-          href="/app/add"
-          className="inline-flex items-center gap-2 rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
-        >
-          <span aria-hidden>＋</span> Add book
-        </Link>
-      </div>
-
-      <ul className="mt-6 space-y-2">
-        {books?.map((book) => (
-          <li
-            key={book.id}
-            className="flex items-start gap-3 rounded-md border border-neutral-200 p-3 dark:border-neutral-800"
+      {books && books.length === 0 ? (
+        <div className="mt-8 flex flex-col items-center gap-3 rounded-md border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-700">
+          <p className="text-base font-medium">Your library is empty</p>
+          <p className="text-sm text-neutral-500">
+            Search Open Library or type in books by hand.
+          </p>
+          <Link
+            href="/app/add"
+            className="mt-2 inline-flex items-center gap-2 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-neutral-900"
           >
+            <span aria-hidden>＋</span> Add your first book
+          </Link>
+        </div>
+      ) : (
+        <>
+          <div className="mt-6">
             <Link
-              href={`/app/books/${book.id}`}
-              className="flex min-w-0 flex-1 items-start gap-3 rounded hover:opacity-80"
+              href="/app/add"
+              className="inline-flex items-center gap-2 rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
             >
-              <BookCover
-                cover_url={book.cover_url}
-                alt={book.title}
-                size="md"
-              />
-              <div className="min-w-0 flex-1 space-y-1">
-                <p className="line-clamp-2 text-sm font-medium">
-                  {book.title}
-                </p>
-                {book.author && (
-                  <p className="line-clamp-1 text-xs text-neutral-500">
-                    {book.author}
-                  </p>
-                )}
-              </div>
+              <span aria-hidden>＋</span> Add book
             </Link>
-            <AvailabilityToggle
-              bookId={book.id}
-              isAvailable={book.is_available}
-            />
-          </li>
-        ))}
-      </ul>
+          </div>
 
-      {books && books.length === 0 && (
-        <p className="mt-6 text-sm text-neutral-500">No books yet.</p>
+          <ul className="mt-6 space-y-2">
+            {books?.map((book) => (
+              <li
+                key={book.id}
+                className="flex items-start gap-3 rounded-md border border-neutral-200 p-3 dark:border-neutral-800"
+              >
+                <Link
+                  href={`/app/books/${book.id}`}
+                  className="flex min-w-0 flex-1 items-start gap-3 rounded hover:opacity-80"
+                >
+                  <BookCover
+                    cover_url={book.cover_url}
+                    alt={book.title}
+                    size="md"
+                  />
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <p className="line-clamp-2 text-sm font-medium">
+                      {book.title}
+                    </p>
+                    {book.author && (
+                      <p className="line-clamp-1 text-xs text-neutral-500">
+                        {book.author}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+                <AvailabilityToggle
+                  bookId={book.id}
+                  isAvailable={book.is_available}
+                />
+              </li>
+            ))}
+          </ul>
+        </>
       )}
 
       <div className="mt-auto pt-8">
