@@ -66,7 +66,7 @@ The `counterparty` API route now returns handle fields instead of `email`. Every
 
 - [x] `discoverable_books` Postgres view
 - [x] Discover feed: not-mine + available, paginated
-- [ ] Search: `ilike` on title/author
+- [x] Search: `ilike` on title/author
 - [ ] Two filter chips: all / fiction (don't overthink)
 - [ ] Book detail screen: cover, title, author, condition, owner first name
 - [ ] Owner profile click-through shows first name + handle previews (no email)
