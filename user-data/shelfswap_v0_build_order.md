@@ -50,7 +50,7 @@ The `counterparty` API route now returns handle fields instead of `email`. Every
 - [x] Add book: search → pick result → set condition → save
 - [x] Manual entry fallback path
 - [x] Library list: covers, titles, author, availability pill
-- [ ] One-tap availability toggle
+- [x] One-tap availability toggle
 - [ ] Edit and delete
 - [ ] Empty state with "Add your first book" CTA
 
