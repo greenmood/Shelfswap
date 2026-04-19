@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { EditBookForm } from "./edit-book-form";
 
 export default async function EditBookPage({
@@ -10,13 +10,11 @@ export default async function EditBookPage({
 }) {
   const { id } = await params;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) {
     redirect("/login");
   }
+  const supabase = await createClient();
 
   const { data: book } = await supabase
     .from("books")

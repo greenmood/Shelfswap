@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { BookCover } from "@/components/book-cover";
 
 export default async function DiscoverBookPage({
@@ -10,13 +10,11 @@ export default async function DiscoverBookPage({
 }) {
   const { id } = await params;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) {
     redirect("/login");
   }
+  const supabase = await createClient();
 
   const { data: book } = await supabase
     .from("discoverable_books")

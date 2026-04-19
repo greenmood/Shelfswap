@@ -25,11 +25,17 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // IMPORTANT: this line refreshes the auth token. Without it, sessions die
-  // after their access-token TTL (1h by default). Calling getUser() causes the
-  // SSR SDK to verify the token with Supabase and, if it's expired, swap in a
-  // new one using the refresh token cookie.
-  await supabase.auth.getUser();
+  // Refreshes the auth token by probing the session. Wrapped in try/catch
+  // because Supabase Auth has its own rate limits on /auth/v1/user; if we
+  // trip one, getUser() throws — and an unhandled throw in middleware 500s
+  // every page. Silent pass-through is safe: downstream server components do
+  // their own getUser() and will redirect to /login if the session is truly
+  // invalid.
+  try {
+    await supabase.auth.getUser();
+  } catch (err) {
+    console.warn("[proxy] auth refresh skipped:", (err as Error).message);
+  }
 
   return response;
 }

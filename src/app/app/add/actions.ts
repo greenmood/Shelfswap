@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 
 export type AddBookInput = {
   title: string;
@@ -12,13 +12,11 @@ export type AddBookInput = {
 };
 
 export async function addBook(input: AddBookInput) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) {
     throw new Error("unauthorized");
   }
+  const supabase = await createClient();
 
   const title = input.title.trim();
   if (!title) {

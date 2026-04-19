@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendSwapRequestEmail } from "@/lib/email/send";
 
@@ -14,13 +14,11 @@ function err(code: string, message: string, status: number) {
 
 export async function POST(request: NextRequest) {
   // --- Validation 1: authed caller --------------------------------------
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) {
     return err("unauthorized", "Sign in to propose a swap.", 401);
   }
+  const supabase = await createClient();
 
   let body: CreateSwapBody;
   try {

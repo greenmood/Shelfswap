@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   sendSwapStatusEmail,
@@ -31,13 +31,11 @@ export async function PATCH(
   const { id } = await context.params;
 
   // --- Auth ------------------------------------------------------------
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) {
     return err("unauthorized", "Sign in to update a swap.", 401);
   }
+  const supabase = await createClient();
 
   // --- Parse body ------------------------------------------------------
   let body: { action?: string };

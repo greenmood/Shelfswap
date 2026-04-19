@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { BookCover } from "@/components/book-cover";
 import { StatusPill, type SwapStatus } from "@/components/status-pill";
 import { SwapActions } from "./swap-actions";
@@ -47,13 +47,11 @@ export default async function SwapDetailPage({
 }) {
   const { id } = await params;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) {
     redirect("/login");
   }
+  const supabase = await createClient();
 
   const { data } = await supabase
     .from("swap_requests")

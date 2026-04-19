@@ -1,16 +1,14 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { DiscoverFeed, PAGE_SIZE } from "./discover-feed";
 
 export default async function DiscoverPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) {
     redirect("/login");
   }
+  const supabase = await createClient();
 
   // PostgREST quirk: .neq on a UUID column projected through a view returns
   // empty; .not(col,"eq",val) is the working equivalent. Separately, .range()

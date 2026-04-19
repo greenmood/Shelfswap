@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 
 export default async function UserProfilePage({
   params,
@@ -9,10 +9,7 @@ export default async function UserProfilePage({
 }) {
   const { id } = await params;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) {
     redirect("/login");
   }
@@ -22,6 +19,7 @@ export default async function UserProfilePage({
     redirect("/app/profile");
   }
 
+  const supabase = await createClient();
   const { data: profile } = await supabase
     .from("public_profiles")
     .select("id, first_name, has_whatsapp, has_telegram, has_instagram")

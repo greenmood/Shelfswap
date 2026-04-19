@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { BookCover } from "@/components/book-cover";
 import { ProposeForm } from "./propose-form";
 
@@ -11,13 +11,11 @@ export default async function ProposePage({
 }) {
   const { id } = await params;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getCurrentUser();
   if (!user) {
     redirect("/login");
   }
+  const supabase = await createClient();
 
   // Fetch the requested book + my available books + my open swaps for this
   // same requested book, all in parallel.
