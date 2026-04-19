@@ -60,7 +60,16 @@ export default async function DiscoverBookPage({
         </div>
       </div>
 
-      <div className="mt-8 divide-y divide-neutral-200 rounded-md border border-neutral-200 text-sm dark:divide-neutral-800 dark:border-neutral-800">
+      <div className="mt-8">
+        <Link
+          href={`/app/discover/books/${book.id}/propose`}
+          className="inline-flex items-center gap-2 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-neutral-900"
+        >
+          Propose swap
+        </Link>
+      </div>
+
+      <div className="mt-6 divide-y divide-neutral-200 rounded-md border border-neutral-200 text-sm dark:divide-neutral-800 dark:border-neutral-800">
         <div className="flex items-center justify-between px-4 py-3">
           <span className="text-neutral-500">Condition</span>
           <span className="font-medium">
