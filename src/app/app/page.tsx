@@ -32,24 +32,38 @@ export default async function AppHome() {
         </Link>
       </header>
 
-      <div className="mt-12 space-y-4 text-center">
-        <p className="text-sm text-neutral-500">
-          {profile?.first_name
-            ? `Hi, ${profile.first_name}.`
-            : "Set up your profile to get started."}
-        </p>
-        <p className="text-sm text-neutral-500">
-          (Catalog UI lands in Week 2.)
-        </p>
-        {!profile?.first_name && (
-          <Link
-            href="/app/profile"
-            className="inline-block rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-neutral-900"
-          >
-            Complete profile
-          </Link>
+      <div className="mt-6 space-y-3">
+        {profile?.first_name ? (
+          <p className="text-sm text-neutral-500">
+            Hi, {profile.first_name}.
+          </p>
+        ) : (
+          <div className="space-y-2">
+            <p className="text-sm text-neutral-500">
+              Set up your profile to get started.
+            </p>
+            <Link
+              href="/app/profile"
+              className="inline-block rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-neutral-900"
+            >
+              Complete profile
+            </Link>
+          </div>
         )}
       </div>
+
+      <div className="mt-8">
+        <Link
+          href="/app/add"
+          className="inline-flex items-center gap-2 rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
+        >
+          <span aria-hidden>＋</span> Add book
+        </Link>
+      </div>
+
+      <p className="mt-8 text-sm text-neutral-500">
+        Catalog list lands next.
+      </p>
 
       <div className="mt-auto pt-8">
         <SignOutButton />

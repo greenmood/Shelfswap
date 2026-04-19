@@ -1,0 +1,245 @@
+"use client";
+
+import { useEffect, useRef, useState, useTransition } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { addBook, type AddBookInput } from "./actions";
+
+type SearchResult = {
+  title: string;
+  author: string | null;
+  cover_url: string | null;
+};
+
+type Status = "idle" | "searching" | "error";
+
+export function AddBookForm() {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SearchResult[]>([]);
+  const [status, setStatus] = useState<Status>("idle");
+  const [searchError, setSearchError] = useState<string | null>(null);
+
+  const [selected, setSelected] = useState<SearchResult | null>(null);
+  const [condition, setCondition] = useState<"good" | "worn">("good");
+
+  const [isSaving, startTransition] = useTransition();
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Debounced search against our proxy.
+  const abortRef = useRef<AbortController | null>(null);
+  useEffect(() => {
+    if (selected) return; // freeze search once a pick is made
+    if (query.trim().length < 2) {
+      setResults([]);
+      setStatus("idle");
+      return;
+    }
+
+    setStatus("searching");
+    const timer = setTimeout(async () => {
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      try {
+        const res = await fetch(
+          `/api/book-lookup?q=${encodeURIComponent(query.trim())}`,
+          { signal: controller.signal },
+        );
+        if (!res.ok) throw new Error("Search failed.");
+        const data = (await res.json()) as SearchResult[];
+        setResults(data);
+        setStatus("idle");
+        setSearchError(null);
+      } catch (err) {
+        if ((err as Error).name === "AbortError") return;
+        setStatus("error");
+        setSearchError((err as Error).message);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [query, selected]);
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!selected) return;
+
+    const payload: AddBookInput = {
+      title: selected.title,
+      author: selected.author,
+      cover_url: selected.cover_url,
+      condition,
+    };
+
+    startTransition(async () => {
+      try {
+        await addBook(payload);
+        // addBook() calls redirect("/app") on success — control doesn't return.
+      } catch (err) {
+        setSaveError((err as Error).message);
+      }
+    });
+  }
+
+  return (
+    <div className="mt-6 space-y-4">
+      {!selected ? (
+        <>
+          <input
+            type="search"
+            autoFocus
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by title or author…"
+            className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
+          />
+
+          {status === "searching" && (
+            <p className="text-sm text-neutral-500">Searching…</p>
+          )}
+          {status === "error" && searchError && (
+            <p className="text-sm text-red-600">{searchError}</p>
+          )}
+          {status === "idle" &&
+            query.trim().length >= 2 &&
+            results.length === 0 && (
+              <p className="text-sm text-neutral-500">
+                No matches. Try a different query, or add manually (coming soon).
+              </p>
+            )}
+
+          <ul className="space-y-2">
+            {results.map((r, i) => (
+              <li key={`${r.title}-${i}`}>
+                <button
+                  type="button"
+                  onClick={() => setSelected(r)}
+                  className="flex w-full items-start gap-3 rounded-md border border-neutral-200 p-3 text-left hover:border-neutral-400 dark:border-neutral-800 dark:hover:border-neutral-600"
+                >
+                  <BookCover
+                    cover_url={r.cover_url}
+                    alt={r.title}
+                    size="sm"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="line-clamp-2 text-sm font-medium">
+                      {r.title}
+                    </p>
+                    {r.author && (
+                      <p className="line-clamp-1 text-xs text-neutral-500">
+                        {r.author}
+                      </p>
+                    )}
+                  </div>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex items-start gap-4 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">
+            <BookCover
+              cover_url={selected.cover_url}
+              alt={selected.title}
+              size="lg"
+            />
+            <div className="min-w-0 flex-1 space-y-1">
+              <p className="font-medium">{selected.title}</p>
+              {selected.author && (
+                <p className="text-sm text-neutral-500">{selected.author}</p>
+              )}
+              <button
+                type="button"
+                onClick={() => setSelected(null)}
+                className="text-xs text-neutral-500 underline hover:text-neutral-900 dark:hover:text-neutral-100"
+              >
+                Pick a different result
+              </button>
+            </div>
+          </div>
+
+          <fieldset className="space-y-2">
+            <legend className="text-sm font-medium">Condition</legend>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  name="condition"
+                  value="good"
+                  checked={condition === "good"}
+                  onChange={() => setCondition("good")}
+                />
+                Good
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="radio"
+                  name="condition"
+                  value="worn"
+                  checked={condition === "worn"}
+                  onChange={() => setCondition("worn")}
+                />
+                Worn
+              </label>
+            </div>
+          </fieldset>
+
+          <div className="flex items-center gap-3">
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-neutral-900"
+            >
+              {isSaving ? "Adding…" : "Add to library"}
+            </button>
+            <Link
+              href="/app"
+              className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+            >
+              Cancel
+            </Link>
+            {saveError && (
+              <span className="text-sm text-red-600">{saveError}</span>
+            )}
+          </div>
+        </form>
+      )}
+    </div>
+  );
+}
+
+function BookCover({
+  cover_url,
+  alt,
+  size,
+}: {
+  cover_url: string | null;
+  alt: string;
+  size: "sm" | "lg";
+}) {
+  const dims = size === "sm" ? { w: 40, h: 60 } : { w: 80, h: 120 };
+
+  if (!cover_url) {
+    return (
+      <div
+        style={{ width: dims.w, height: dims.h }}
+        className="flex shrink-0 items-center justify-center rounded border border-neutral-200 bg-neutral-50 text-xs text-neutral-400 dark:border-neutral-800 dark:bg-neutral-900"
+      >
+        No cover
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      src={cover_url}
+      alt={alt}
+      width={dims.w}
+      height={dims.h}
+      className="h-auto shrink-0 rounded border border-neutral-200 object-cover dark:border-neutral-800"
+      unoptimized
+    />
+  );
+}
