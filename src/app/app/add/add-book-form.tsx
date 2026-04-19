@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import { BookCover } from "@/components/book-cover";
 import { addBook, type AddBookInput } from "./actions";
 
 type SearchResult = {
@@ -347,36 +347,3 @@ function Field({
   );
 }
 
-function BookCover({
-  cover_url,
-  alt,
-  size,
-}: {
-  cover_url: string | null;
-  alt: string;
-  size: "sm" | "lg";
-}) {
-  const dims = size === "sm" ? { w: 40, h: 60 } : { w: 80, h: 120 };
-
-  if (!cover_url) {
-    return (
-      <div
-        style={{ width: dims.w, height: dims.h }}
-        className="flex shrink-0 items-center justify-center rounded border border-neutral-200 bg-neutral-50 text-xs text-neutral-400 dark:border-neutral-800 dark:bg-neutral-900"
-      >
-        No cover
-      </div>
-    );
-  }
-
-  return (
-    <Image
-      src={cover_url}
-      alt={alt}
-      width={dims.w}
-      height={dims.h}
-      className="h-auto shrink-0 rounded border border-neutral-200 object-cover dark:border-neutral-800"
-      unoptimized
-    />
-  );
-}
