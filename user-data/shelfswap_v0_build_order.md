@@ -108,8 +108,8 @@ The week that separates projects from products.
 - [x] Error states on contested state transitions (accepting a cancelled swap)
 - [ ] Email deliverability test: Gmail, Outlook, iCloud, Proton
 - [ ] Tap-to-open handle links verified on iOS and Android mobile web
-- [ ] Open Graph meta tags so shared links preview well
-- [ ] Custom domain
+- [x] Open Graph meta tags so shared links preview well
+- [x] Custom domain
 - [ ] Ship link to 3 friends with a short "here's why" note
 
 ---
