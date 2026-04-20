@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient, getCurrentUser } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { BookCover } from "@/components/book-cover";
 import { StatusPill, type SwapStatus } from "@/components/status-pill";
 import { SwapActions } from "./swap-actions";
@@ -22,8 +23,8 @@ type SwapDetail = {
   created_at: string;
   requester_id: string;
   owner_id: string;
-  requested: BookRef;
-  offered: BookRef;
+  requested: BookRef | null;
+  offered: BookRef | null;
   requester_profile: ProfileRef | null;
   owner_profile: ProfileRef | null;
 };
@@ -51,7 +52,11 @@ export default async function SwapDetailPage({
   if (!user) {
     redirect("/login");
   }
-  const supabase = await createClient();
+
+  // Admin client to bypass RLS on the embedded tables (books RLS hides
+  // unavailable books, users RLS hides other users). We verify the caller
+  // is a party to the swap below.
+  const supabase = createAdminClient();
 
   const { data } = await supabase
     .from("swap_requests")
@@ -164,13 +169,14 @@ export default async function SwapDetailPage({
   );
 }
 
-function BookRow({ book }: { book: BookRef }) {
+function BookRow({ book }: { book: BookRef | null }) {
+  const title = book?.title ?? "Unknown book";
   return (
     <div className="flex items-start gap-3 rounded-md border border-neutral-200 p-3 dark:border-neutral-800">
-      <BookCover cover_url={book.cover_url} alt={book.title} size="md" />
+      <BookCover cover_url={book?.cover_url ?? null} alt={title} size="md" />
       <div className="min-w-0 flex-1 space-y-1">
-        <p className="line-clamp-2 text-sm font-medium">{book.title}</p>
-        {book.author && (
+        <p className="line-clamp-2 text-sm font-medium">{title}</p>
+        {book?.author && (
           <p className="line-clamp-1 text-xs text-neutral-500">
             {book.author}
           </p>

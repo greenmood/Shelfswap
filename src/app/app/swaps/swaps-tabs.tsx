@@ -22,8 +22,10 @@ export type SwapRow = {
   created_at: string;
   requester_id: string;
   owner_id: string;
-  requested: BookRef;
-  offered: BookRef;
+  // Embeds can be null if the referenced row is missing or filtered by RLS.
+  // We use admin client to avoid RLS filtering, but keep the types honest.
+  requested: BookRef | null;
+  offered: BookRef | null;
   requester_profile: ProfileRef | null;
   owner_profile: ProfileRef | null;
 };
@@ -123,10 +125,14 @@ function EmptyState({ tab }: { tab: Tab }) {
 }
 
 function SwapItem({ swap, tab }: { swap: SwapRow; tab: Tab }) {
-  // For incoming: focus is on what someone wants from you (= requested book).
-  // For outgoing: focus is on what you want (= requested book) too.
-  // Either way, the "headline" book is `requested`. The "side" hint is the
-  // other party's first name + a label of who they are relative to you.
+  // Belt-and-suspenders: if an embed ever returns null (e.g., book deleted
+  // outside the cascade path), fall back to a placeholder so the page
+  // doesn't crash.
+  const requestedTitle = swap.requested?.title ?? "Unknown book";
+  const requestedAuthor = swap.requested?.author ?? null;
+  const requestedCover = swap.requested?.cover_url ?? null;
+  const offeredTitle = swap.offered?.title ?? "Unknown book";
+
   const otherName =
     tab === "incoming"
       ? (swap.requester_profile?.first_name ?? "someone")
@@ -138,27 +144,19 @@ function SwapItem({ swap, tab }: { swap: SwapRow; tab: Tab }) {
         href={`/app/swaps/${swap.id}`}
         className="flex items-start gap-3 rounded-md border border-neutral-200 p-3 hover:border-neutral-400 dark:border-neutral-800 dark:hover:border-neutral-600"
       >
-        <BookCover
-          cover_url={swap.requested.cover_url}
-          alt={swap.requested.title}
-          size="md"
-        />
+        <BookCover cover_url={requestedCover} alt={requestedTitle} size="md" />
         <div className="min-w-0 flex-1 space-y-1">
-          <p className="line-clamp-2 text-sm font-medium">
-            {swap.requested.title}
-          </p>
-          {swap.requested.author && (
+          <p className="line-clamp-2 text-sm font-medium">{requestedTitle}</p>
+          {requestedAuthor && (
             <p className="line-clamp-1 text-xs text-neutral-500">
-              {swap.requested.author}
+              {requestedAuthor}
             </p>
           )}
           <p className="text-xs text-neutral-500">
             {tab === "incoming" ? "From " : "To "}
             <span className="font-medium">{otherName}</span>
             {" · for "}
-            <span className="line-clamp-1 inline">
-              {swap.offered.title}
-            </span>
+            <span className="line-clamp-1 inline">{offeredTitle}</span>
           </p>
         </div>
         <StatusPill status={swap.status} />

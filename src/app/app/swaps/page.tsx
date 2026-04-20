@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { createClient, getCurrentUser } from "@/lib/supabase/server";
+import { getCurrentUser } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { SwapsTabs, type SwapRow } from "./swaps-tabs";
 
 export default async function SwapsPage() {
@@ -8,7 +9,13 @@ export default async function SwapsPage() {
   if (!user) {
     redirect("/login");
   }
-  const supabase = await createClient();
+
+  // Admin client bypasses RLS. Safe here because:
+  //   1. getCurrentUser() has already verified the caller's identity.
+  //   2. Both queries are explicitly filtered to the caller's id.
+  // Without admin, the book embed can return null when the other party's
+  // book is no longer available (RLS hides it), which makes the UI crash.
+  const supabase = createAdminClient();
 
   // PostgREST embed pulls related rows in one round-trip. Aliases (incoming /
   // outgoing intent) are surfaced via the response shape: requested_book is
