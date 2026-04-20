@@ -57,7 +57,7 @@ export function ProfileForm({ initial }: { initial: Profile }) {
         required
       />
 
-      <div className="space-y-3 rounded-md border border-subtle p-4 dark:border-neutral-800">
+      <div className="space-y-3 rounded-md border border-subtle bg-paper p-4 dark:border-neutral-800">
         <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
           Handles
         </p>

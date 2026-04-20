@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { ProfileForm } from "./profile-form";
+import { SignOutButton } from "../sign-out-button";
 
 export default async function ProfilePage() {
   const user = await getCurrentUser();
@@ -17,7 +18,7 @@ export default async function ProfilePage() {
     .single();
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6">
       <div className="flex items-center justify-between">
         <Link
           href="/app"
@@ -42,6 +43,10 @@ export default async function ProfilePage() {
           instagram: profile?.instagram ?? "",
         }}
       />
+
+      <div className="mt-10 border-t border-subtle pt-6">
+        <SignOutButton />
+      </div>
     </main>
   );
 }

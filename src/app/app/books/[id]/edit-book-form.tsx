@@ -64,7 +64,7 @@ export function EditBookForm({
   return (
     <div className="mt-6 space-y-6">
       <form onSubmit={handleSave} className="space-y-5">
-        <div className="flex items-start gap-4 rounded-md border border-subtle p-4 dark:border-neutral-800">
+        <div className="flex items-start gap-4 rounded-md border border-subtle bg-paper p-4 dark:border-neutral-800">
           <BookCover
             cover_url={book.cover_url}
             alt={book.title}

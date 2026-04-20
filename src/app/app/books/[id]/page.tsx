@@ -28,7 +28,7 @@ export default async function EditBookPage({
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6">
       <Link
         href="/app"
         className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"

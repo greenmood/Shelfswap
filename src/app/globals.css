@@ -61,3 +61,19 @@ body {
   font-size: 14px;
   line-height: 1.5;
 }
+
+/*
+ * Desktop-only: a very faint square grid over the cream. Gives the empty
+ * space around the mobile-shaped content column some texture so the column
+ * reads as "focused" rather than "stranded in void." Below md the column
+ * fills the viewport so there's nothing to decorate.
+ */
+@media (min-width: 768px) {
+  body {
+    background-image:
+      linear-gradient(to right, rgba(26, 24, 20, 0.03) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(26, 24, 20, 0.03) 1px, transparent 1px);
+    background-size: 28px 28px;
+    background-attachment: fixed;
+  }
+}

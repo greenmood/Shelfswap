@@ -102,7 +102,7 @@ export default async function SwapDetailPage({
     : [];
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6">
       <Link
         href="/app/swaps"
         className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
@@ -142,7 +142,7 @@ export default async function SwapDetailPage({
         <BookRow book={swap.offered} />
       </section>
 
-      <section className="mt-8 divide-y divide-subtle rounded-md border border-subtle text-sm dark:divide-neutral-800 dark:border-neutral-800">
+      <section className="mt-8 divide-y divide-subtle rounded-md border border-subtle bg-paper text-sm dark:divide-neutral-800 dark:border-neutral-800">
         <Link
           href={`/app/users/${otherPartyId}`}
           className="flex items-center justify-between px-4 py-3 hover:bg-cream-dim dark:hover:bg-ink"
@@ -176,7 +176,7 @@ export default async function SwapDetailPage({
             Contact {otherPartyName}
           </p>
           {handles.length > 0 ? (
-            <div className="divide-y divide-subtle rounded-md border border-subtle text-sm dark:divide-neutral-800 dark:border-neutral-800">
+            <div className="divide-y divide-subtle rounded-md border border-subtle bg-paper text-sm dark:divide-neutral-800 dark:border-neutral-800">
               {handles.map((h) => (
                 <a
                   key={h.label}
@@ -239,7 +239,7 @@ function buildHandles(profile: ProfileRef): Handle[] {
 function BookRow({ book }: { book: BookRef | null }) {
   const title = book?.title ?? "Unknown book";
   return (
-    <div className="flex items-start gap-3 rounded-md border border-subtle p-3 dark:border-neutral-800">
+    <div className="flex items-start gap-3 rounded-md border border-subtle bg-paper p-3 dark:border-neutral-800">
       <BookCover cover_url={book?.cover_url ?? null} alt={title} size="md" />
       <div className="min-w-0 flex-1 space-y-1">
         <p className="line-clamp-2 text-sm font-medium">{title}</p>

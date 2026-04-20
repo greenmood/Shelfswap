@@ -170,7 +170,7 @@ export function AddBookForm() {
   if (selected) {
     return (
       <form onSubmit={handleSubmitSelected} className="mt-6 space-y-6">
-        <div className="flex items-start gap-4 rounded-md border border-subtle p-4 dark:border-neutral-800">
+        <div className="flex items-start gap-4 rounded-md border border-subtle bg-paper p-4 dark:border-neutral-800">
           <BookCover
             cover_url={selected.cover_url}
             alt={selected.title}
@@ -247,7 +247,7 @@ export function AddBookForm() {
             <button
               type="button"
               onClick={() => setSelected(r)}
-              className="flex w-full items-start gap-3 rounded-md border border-subtle p-3 text-left hover:border-ink dark:border-neutral-800 dark:hover:border-neutral-600"
+              className="flex w-full items-start gap-3 rounded-md border border-subtle bg-paper p-3 text-left hover:border-ink dark:border-neutral-800 dark:hover:border-neutral-600"
             >
               <BookCover cover_url={r.cover_url} alt={r.title} size="sm" />
               <div className="min-w-0 flex-1">

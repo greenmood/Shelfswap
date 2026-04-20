@@ -10,7 +10,7 @@ export default async function AddBookPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6">
       <div className="flex items-center justify-between">
         <Link
           href="/app"

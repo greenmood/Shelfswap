@@ -57,7 +57,7 @@ export default async function ProposePage({
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6">
       <Link
         href={`/app/discover/books/${id}`}
         className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
@@ -71,7 +71,7 @@ export default async function ProposePage({
         <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
           You want
         </p>
-        <div className="flex items-start gap-4 rounded-md border border-subtle p-4 dark:border-neutral-800">
+        <div className="flex items-start gap-4 rounded-md border border-subtle bg-paper p-4 dark:border-neutral-800">
           <BookCover
             cover_url={requested.cover_url}
             alt={requested.title}

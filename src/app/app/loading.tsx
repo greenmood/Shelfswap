@@ -7,7 +7,7 @@
 export default function AppLoading() {
   return (
     <main
-      className="mx-auto flex min-h-screen max-w-md flex-col p-6 pb-24 md:pb-6"
+      className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6 pb-24 md:pb-6"
       aria-busy="true"
       aria-live="polite"
     >
@@ -17,7 +17,7 @@ export default function AppLoading() {
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
-            className="flex items-start gap-3 rounded-md border border-subtle p-3"
+            className="flex items-start gap-3 rounded-md border border-subtle bg-paper p-3"
           >
             <div
               className="h-[84px] w-[56px] shrink-0 animate-pulse rounded-[2px] bg-cream-dim"

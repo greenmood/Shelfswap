@@ -38,7 +38,7 @@ export default async function UserProfilePage({
   ].filter(Boolean) as string[];
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6">
       <Link
         href="/app/discover"
         className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
@@ -50,7 +50,7 @@ export default async function UserProfilePage({
         <h1 className="font-serif text-2xl font-medium tracking-tight">{profile.first_name ?? "—"}</h1>
       </div>
 
-      <section className="mt-8 space-y-3 rounded-md border border-subtle p-4 dark:border-neutral-800">
+      <section className="mt-8 space-y-3 rounded-md border border-subtle bg-paper p-4 dark:border-neutral-800">
         <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
           Reachable via
         </p>

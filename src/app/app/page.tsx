@@ -3,7 +3,6 @@ import Link from "next/link";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { BookCover } from "@/components/book-cover";
 import { AvailabilityToggle } from "./availability-toggle";
-import { SignOutButton } from "./sign-out-button";
 
 export default async function AppHome() {
   const user = await getCurrentUser();
@@ -22,7 +21,7 @@ export default async function AppHome() {
   ]);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6 pb-24 md:pb-6">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6 pb-24 md:pb-6">
       <header className="flex items-center justify-between">
         <h1 className="font-serif text-2xl font-medium tracking-tight">Library</h1>
         <div className="flex items-center gap-4">
@@ -99,7 +98,7 @@ export default async function AppHome() {
             {books?.map((book) => (
               <li
                 key={book.id}
-                className="flex items-start gap-3 rounded-md border border-subtle p-3 dark:border-neutral-800"
+                className="flex items-start gap-3 rounded-md border border-subtle bg-paper p-3 dark:border-neutral-800"
               >
                 <Link
                   href={`/app/books/${book.id}`}
@@ -131,9 +130,6 @@ export default async function AppHome() {
         </>
       )}
 
-      <div className="mt-auto pt-8">
-        <SignOutButton />
-      </div>
     </main>
   );
 }

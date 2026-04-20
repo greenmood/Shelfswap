@@ -46,7 +46,7 @@ export function SwapsTabs({
     <div className="mt-6 space-y-4">
       <div
         role="tablist"
-        className="grid grid-cols-2 rounded-md border border-subtle p-1 text-sm dark:border-neutral-800"
+        className="grid grid-cols-2 rounded-md border border-subtle bg-paper p-1 text-sm dark:border-neutral-800"
       >
         <TabButton
           label="Incoming"
@@ -152,7 +152,7 @@ function SwapItem({ swap, tab }: { swap: SwapRow; tab: Tab }) {
     <li>
       <Link
         href={`/app/swaps/${swap.id}`}
-        className="flex items-start gap-3 rounded-md border border-subtle p-3 hover:border-ink dark:border-neutral-800 dark:hover:border-neutral-600"
+        className="flex items-start gap-3 rounded-md border border-subtle bg-paper p-3 hover:border-ink dark:border-neutral-800 dark:hover:border-neutral-600"
       >
         <BookCover cover_url={requestedCover} alt={requestedTitle} size="md" />
         <div className="min-w-0 flex-1 space-y-1">

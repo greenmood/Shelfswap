@@ -36,7 +36,7 @@ export default async function DiscoverBookPage({
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6">
       <Link
         href="/app/discover"
         className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
@@ -67,7 +67,7 @@ export default async function DiscoverBookPage({
         </Link>
       </div>
 
-      <div className="mt-6 divide-y divide-subtle rounded-md border border-subtle text-sm dark:divide-neutral-800 dark:border-neutral-800">
+      <div className="mt-6 divide-y divide-subtle rounded-md border border-subtle bg-paper text-sm dark:divide-neutral-800 dark:border-neutral-800">
         <div className="flex items-center justify-between px-4 py-3">
           <span className="text-muted">Condition</span>
           <span className="font-medium">

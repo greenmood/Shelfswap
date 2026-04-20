@@ -45,7 +45,7 @@ export default function LoginPage() {
         </div>
 
         {status === "sent" ? (
-          <div className="rounded-md border border-subtle p-4 text-sm dark:border-neutral-800">
+          <div className="rounded-md border border-subtle bg-paper p-4 text-sm dark:border-neutral-800">
             <p className="font-medium">Check your email</p>
             <p className="mt-1 text-muted">
               We sent a link to <span className="font-mono">{email}</span>.

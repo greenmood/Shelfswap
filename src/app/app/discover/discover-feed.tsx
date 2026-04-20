@@ -165,7 +165,7 @@ export function DiscoverFeed({
             <li key={book.id}>
               <Link
                 href={`/app/discover/books/${book.id}`}
-                className="flex items-start gap-3 rounded-md border border-subtle p-3 hover:border-ink dark:border-neutral-800 dark:hover:border-neutral-600"
+                className="flex items-start gap-3 rounded-md border border-subtle bg-paper p-3 hover:border-ink dark:border-neutral-800 dark:hover:border-neutral-600"
               >
                 <BookCover
                   cover_url={book.cover_url}
