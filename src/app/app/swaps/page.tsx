@@ -42,7 +42,7 @@ export default async function SwapsPage() {
   ]);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6 pb-24 md:pb-6">
       <div className="flex items-center justify-between">
         <Link
           href="/app"

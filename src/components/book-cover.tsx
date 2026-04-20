@@ -20,12 +20,24 @@ export function BookCover({
   const { w, h } = DIMS[size];
 
   if (!cover_url) {
+    // Wireframe-style gradient placeholder — warm paper tones with a
+    // subtle diagonal highlight to hint at a book's sheen. No "No cover"
+    // text; context makes it obvious.
     return (
       <div
+        aria-label={alt}
+        role="img"
         style={{ width: w, height: h }}
-        className="flex shrink-0 items-center justify-center rounded border border-subtle bg-cream-dim text-xs text-muted dark:border-neutral-800 dark:bg-ink"
+        className="relative shrink-0 overflow-hidden rounded-[2px] bg-gradient-to-br from-[#ede4cd] to-[#d9cfb5] shadow-sm"
       >
-        No cover
+        <span
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent"
+          style={{
+            backgroundImage:
+              "linear-gradient(100deg, transparent 55%, rgba(255,255,255,0.25) 60%, transparent 65%)",
+          }}
+        />
       </div>
     );
   }
@@ -36,7 +48,7 @@ export function BookCover({
       alt={alt}
       width={w}
       height={h}
-      className="h-auto shrink-0 rounded border border-subtle object-cover dark:border-neutral-800"
+      className="h-auto shrink-0 rounded-[2px] object-cover shadow-sm"
       unoptimized
     />
   );
