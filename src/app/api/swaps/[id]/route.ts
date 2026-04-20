@@ -6,18 +6,25 @@ import {
   type SwapStatusEmailKind,
 } from "@/lib/email/send";
 
-type Action = "accept" | "decline" | "cancel";
+type Action = "accept" | "decline" | "cancel" | "complete";
 
-const ACTIONS: Action[] = ["accept", "decline", "cancel"];
+const ACTIONS: Action[] = ["accept", "decline", "cancel", "complete"];
 
-// Which role is allowed to fire each action, and what status it moves to.
+// State machine: who can fire each action, what state it requires, what
+// state it moves to, and an optional "kind" marking this as a complete
+// transition (which needs a transactional book flip and goes through RPC).
+type ActorKind = "owner" | "requester" | "either";
+type FromStatus = "pending" | "accepted";
+type NewStatus = "accepted" | "declined" | "cancelled" | "completed";
+
 const TRANSITIONS: Record<
   Action,
-  { actor: "owner" | "requester"; newStatus: "accepted" | "declined" | "cancelled" }
+  { actor: ActorKind; from: FromStatus; newStatus: NewStatus }
 > = {
-  accept: { actor: "owner", newStatus: "accepted" },
-  decline: { actor: "owner", newStatus: "declined" },
-  cancel: { actor: "requester", newStatus: "cancelled" },
+  accept: { actor: "owner", from: "pending", newStatus: "accepted" },
+  decline: { actor: "owner", from: "pending", newStatus: "declined" },
+  cancel: { actor: "requester", from: "pending", newStatus: "cancelled" },
+  complete: { actor: "either", from: "accepted", newStatus: "completed" },
 };
 
 function err(code: string, message: string, status: number) {
@@ -69,62 +76,97 @@ export async function PATCH(
   }
 
   // --- Role guard -----------------------------------------------------
-  const { actor, newStatus } = TRANSITIONS[action];
+  const spec = TRANSITIONS[action];
   const isOwner = swap.owner_id === user.id;
   const isRequester = swap.requester_id === user.id;
 
   const canFire =
-    (actor === "owner" && isOwner) || (actor === "requester" && isRequester);
+    (spec.actor === "owner" && isOwner) ||
+    (spec.actor === "requester" && isRequester) ||
+    (spec.actor === "either" && (isOwner || isRequester));
 
   if (!canFire) {
     return err(
       "forbidden",
-      `Only the ${actor} can ${action} this swap.`,
+      `Only the ${spec.actor} can ${action} this swap.`,
       403,
     );
   }
 
   // --- Current-state guard -------------------------------------------
-  if (swap.status !== "pending") {
+  if (swap.status !== spec.from) {
     return err(
       "state_changed",
-      `This swap is already ${swap.status}.`,
+      `This swap is ${swap.status} — can't ${action}.`,
       409,
     );
   }
 
-  // --- Atomic conditional update via admin client --------------------
+  // --- Apply the transition ------------------------------------------
   const admin = createAdminClient();
-  const { data: updated, error: updateErr } = await admin
-    .from("swap_requests")
-    .update({ status: newStatus })
-    .eq("id", id)
-    .eq("status", "pending")
-    .select("id, status");
+  let resultStatus: NewStatus;
 
-  if (updateErr) {
-    return err("update_failed", updateErr.message, 500);
-  }
-
-  // If the CAS missed (another request raced us), the row shape is empty.
-  if (!updated || updated.length === 0) {
-    return err(
-      "state_changed",
-      "Someone else just changed this swap. Refresh to see the current state.",
-      409,
+  if (action === "complete") {
+    // complete touches two tables (swap + both books). Must be atomic, so we
+    // call the complete_swap() Postgres function which wraps it in one
+    // transaction and returns null on CAS miss.
+    const { data: rpcResult, error: rpcErr } = await admin.rpc(
+      "complete_swap",
+      {
+        p_swap_id: id,
+        p_user_id: user.id,
+      },
     );
+    if (rpcErr) {
+      return err("update_failed", rpcErr.message, 500);
+    }
+    if (rpcResult === null) {
+      return err(
+        "state_changed",
+        "Someone else just changed this swap. Refresh to see the current state.",
+        409,
+      );
+    }
+    resultStatus = "completed";
+  } else {
+    // Single-table transitions use a simple conditional update.
+    const { data: updated, error: updateErr } = await admin
+      .from("swap_requests")
+      .update({ status: spec.newStatus })
+      .eq("id", id)
+      .eq("status", spec.from)
+      .select("id, status");
+
+    if (updateErr) {
+      return err("update_failed", updateErr.message, 500);
+    }
+    if (!updated || updated.length === 0) {
+      return err(
+        "state_changed",
+        "Someone else just changed this swap. Refresh to see the current state.",
+        409,
+      );
+    }
+    resultStatus = spec.newStatus;
   }
 
-  // Best-effort: notify the other party and log. Failures here don't roll
-  // back the transition.
-  await notifyOtherParty({
-    admin,
-    swap,
-    newStatus: newStatus as SwapStatusEmailKind,
-    appOrigin: new URL(request.url).origin,
-  });
+  // Best-effort: notify the other party and log. Completed transitions skip
+  // email for now (people have already coordinated via handle reveal); the
+  // three pending-state transitions still notify.
+  if (
+    resultStatus === "accepted" ||
+    resultStatus === "declined" ||
+    resultStatus === "cancelled"
+  ) {
+    await notifyOtherParty({
+      admin,
+      swap,
+      newStatus: resultStatus as SwapStatusEmailKind,
+      appOrigin: new URL(request.url).origin,
+    });
+  }
 
-  return NextResponse.json({ id: updated[0].id, status: updated[0].status });
+  return NextResponse.json({ id: swap.id, status: resultStatus });
 }
 
 async function notifyOtherParty(args: {
@@ -167,7 +209,6 @@ async function notifyOtherParty(args: {
       ]);
 
     const recipientEmail = recipientUser.data?.email;
-    // PostgREST embed comes back as { requested: { title }, offered: { title } }
     const detail = swapDetail.data as unknown as {
       requested?: { title?: string };
       offered?: { title?: string };

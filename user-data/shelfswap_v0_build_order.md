@@ -88,7 +88,7 @@ The complicated week. Budget it accordingly — this is where half the interesti
 - [x] Transactional email on status change
 - [x] Handle reveal via `/api/swaps/:id/counterparty` — only when status in (`accepted`, `completed`)
 - [x] Swap detail (accepted state): handles with tap-to-open deep links
-- [ ] Mark complete: transactional status flip + both books to `is_available = false`
+- [x] Mark complete: transactional status flip + both books to `is_available = false`
 
 Deep link patterns:
 - WhatsApp: `https://wa.me/14155551234` (phone, no plus, no spaces)
