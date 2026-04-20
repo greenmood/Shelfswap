@@ -54,7 +54,7 @@ export function BookCover({
       alt={alt}
       width={w}
       height={h}
-      className={`h-auto shrink-0 rounded-[2px] object-cover ${SHADOWS[size]}`}
+      className={`shrink-0 rounded-[2px] object-cover ${SHADOWS[size]}`}
       unoptimized
     />
   );
