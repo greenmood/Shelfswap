@@ -104,7 +104,7 @@ Deep link patterns:
 The week that separates projects from products.
 
 - [x] Empty states on every list (library, discover, swaps × 2)
-- [ ] Loading states on every async action
+- [x] Loading states on every async action
 - [ ] Error states on contested state transitions (accepting a cancelled swap)
 - [ ] Email deliverability test: Gmail, Outlook, iCloud, Proton
 - [ ] Tap-to-open handle links verified on iOS and Android mobile web
