@@ -5,7 +5,13 @@ export type BookCoverSize = "sm" | "md" | "lg";
 const DIMS: Record<BookCoverSize, { w: number; h: number }> = {
   sm: { w: 40, h: 60 },
   md: { w: 56, h: 84 },
-  lg: { w: 80, h: 120 },
+  lg: { w: 118, h: 176 },
+};
+
+const SHADOWS: Record<BookCoverSize, string> = {
+  sm: "shadow-sm",
+  md: "shadow-sm",
+  lg: "shadow-md",
 };
 
 export function BookCover({
@@ -28,7 +34,7 @@ export function BookCover({
         aria-label={alt}
         role="img"
         style={{ width: w, height: h }}
-        className="relative shrink-0 overflow-hidden rounded-[2px] bg-gradient-to-br from-[#ede4cd] to-[#d9cfb5] shadow-sm"
+        className={`relative shrink-0 overflow-hidden rounded-[2px] bg-gradient-to-br from-[#ede4cd] to-[#d9cfb5] ${SHADOWS[size]}`}
       >
         <span
           aria-hidden
@@ -48,7 +54,7 @@ export function BookCover({
       alt={alt}
       width={w}
       height={h}
-      className="h-auto shrink-0 rounded-[2px] object-cover shadow-sm"
+      className={`h-auto shrink-0 rounded-[2px] object-cover ${SHADOWS[size]}`}
       unoptimized
     />
   );

@@ -135,22 +135,28 @@ export default async function AppHome() {
               {booksWithStatus.map((book) => (
                 <li
                   key={book.id}
-                  className="relative flex items-start gap-3 border-b border-divider px-4 py-3 last:border-b-0"
+                  className="relative flex items-start gap-3 border-b border-divider px-4 py-3 transition last:border-b-0 hover:bg-cream-dim/40"
                 >
-                  {/* Stretched link covers the whole row for edit navigation */}
+                  {/*
+                    Stretched link. Inner static content is pointer-events-none
+                    so clicks fall through to this absolute-positioned link
+                    (cursor: pointer everywhere). The pill wrapper below
+                    re-enables pointer events so the availability toggle is
+                    independently clickable.
+                  */}
                   <Link
                     href={`/app/books/${book.id}`}
                     aria-label={`Edit ${book.title}`}
-                    className="absolute inset-0"
+                    className="absolute inset-0 z-0"
                   />
-                  <div className="relative z-10">
+                  <div className="pointer-events-none relative z-10">
                     <BookCover
                       cover_url={book.cover_url}
                       alt={book.title}
                       size="sm"
                     />
                   </div>
-                  <div className="relative z-10 min-w-0 flex-1 space-y-1">
+                  <div className="pointer-events-none relative z-10 min-w-0 flex-1 space-y-1">
                     <p className="line-clamp-2 font-serif text-sm font-medium leading-tight">
                       {book.title}
                     </p>
@@ -159,7 +165,7 @@ export default async function AppHome() {
                         {book.author}
                       </p>
                     )}
-                    <div className="pt-1">
+                    <div className="pointer-events-auto pt-1">
                       {book.status === "in_swap" ? (
                         <BookStatusPill status="in_swap" />
                       ) : (

@@ -27,12 +27,12 @@ export default async function DiscoverPage() {
     <main className="mx-auto flex min-h-screen max-w-md flex-col p-6 pb-24 md:max-w-lg md:pb-6">
       <Link
         href="/app"
-        className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted hover:text-ink md:hidden"
+        className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted hover:text-ink"
       >
         ← Library
       </Link>
 
-      <h1 className="mt-4 font-serif text-2xl font-medium tracking-tight md:mt-0">
+      <h1 className="mt-4 font-serif text-2xl font-medium tracking-tight">
         Discover
       </h1>
 

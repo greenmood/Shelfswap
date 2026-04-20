@@ -169,34 +169,32 @@ export function DiscoverFeed({
           {items.map((book) => (
             <li
               key={book.id}
-              className="relative flex items-start gap-3 border-b border-divider px-4 py-3 last:border-b-0"
+              className="border-b border-divider last:border-b-0"
             >
               <Link
                 href={`/app/discover/books/${book.id}`}
-                aria-label={book.title}
-                className="absolute inset-0"
-              />
-              <div className="relative z-10">
+                className="flex items-start gap-3 px-4 py-3 transition hover:bg-cream-dim/40"
+              >
                 <BookCover
                   cover_url={book.cover_url}
                   alt={book.title}
                   size="sm"
                 />
-              </div>
-              <div className="relative z-10 min-w-0 flex-1 space-y-0.5">
-                <p className="line-clamp-2 font-serif text-sm font-medium leading-tight">
-                  {book.title}
-                </p>
-                {book.author && (
-                  <p className="line-clamp-1 text-xs text-muted">
-                    {book.author}
+                <div className="min-w-0 flex-1 space-y-0.5">
+                  <p className="line-clamp-2 font-serif text-sm font-medium leading-tight">
+                    {book.title}
                   </p>
-                )}
-                <p className="pt-0.5 font-mono text-[10px] text-muted">
-                  {book.owner_first_name ?? "someone"} ·{" "}
-                  {book.condition === "good" ? "Good" : "Worn"}
-                </p>
-              </div>
+                  {book.author && (
+                    <p className="line-clamp-1 text-xs text-muted">
+                      {book.author}
+                    </p>
+                  )}
+                  <p className="pt-0.5 font-mono text-[10px] text-muted">
+                    {book.owner_first_name ?? "someone"} ·{" "}
+                    {book.condition === "good" ? "Good" : "Worn"}
+                  </p>
+                </div>
+              </Link>
             </li>
           ))}
         </ul>

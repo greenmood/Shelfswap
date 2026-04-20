@@ -28,67 +28,79 @@ export default async function DiscoverBookPage({
     notFound();
   }
 
-  // Safety: someone arriving here with their own book's id should bounce to
-  // the edit page (the normal nav path is from Discover which filters this
-  // out, but a direct URL paste shouldn't dump them into an awkward view).
+  // If someone arrives here with their own book's id, bounce them to edit.
   if (book.owner_id === user.id) {
     redirect(`/app/books/${book.id}`);
   }
 
+  const ownerName = book.owner_first_name ?? "someone";
+  const conditionLabel =
+    book.condition === "good" ? "Good condition" : "Worn condition";
+
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6 md:max-w-lg">
       <Link
         href="/app/discover"
-        className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
+        className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted hover:text-ink"
       >
         ← Discover
       </Link>
 
-      <div className="mt-8 flex flex-col items-center gap-4">
-        <BookCover
-          cover_url={book.cover_url}
-          alt={book.title}
-          size="lg"
-        />
-        <div className="space-y-1 text-center">
-          <h1 className="font-serif text-xl font-medium tracking-tight">{book.title}</h1>
-          {book.author && (
-            <p className="text-sm text-muted">{book.author}</p>
-          )}
+      {/* Hero: big centered cover + title + author + condition pill */}
+      <section className="mt-8 flex flex-col items-center text-center">
+        <BookCover cover_url={book.cover_url} alt={book.title} size="lg" />
+        <h1 className="mt-5 font-serif text-[22px] font-medium leading-tight tracking-tight">
+          {book.title}
+        </h1>
+        {book.author && (
+          <p className="mt-1 font-serif text-sm italic text-muted">
+            {book.author}
+          </p>
+        )}
+        <div className="mt-4 flex flex-wrap justify-center gap-1.5">
+          <span className="rounded-full bg-accent-soft px-2 py-0.5 font-mono text-[9px] font-medium uppercase tracking-widest text-accent">
+            {conditionLabel}
+          </span>
         </div>
-      </div>
+      </section>
 
-      <div className="mt-8">
+      {/* Owner card — clickable; taps through to the public profile */}
+      <Link
+        href={`/app/users/${book.owner_id}`}
+        className="mt-8 flex items-center gap-3 rounded-md bg-cream-dim px-3 py-3 hover:bg-cream-dim/80"
+      >
+        <Avatar />
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium">Offered by {ownerName}</p>
+          <p className="mt-0.5 font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
+            View profile
+          </p>
+        </div>
+        <span aria-hidden className="text-base text-muted">
+          ›
+        </span>
+      </Link>
+
+      {/* Primary CTA pinned to bottom of the flex column */}
+      <div className="mt-auto pt-10">
         <Link
           href={`/app/discover/books/${book.id}/propose`}
-          className="inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper dark:bg-paper dark:text-ink"
+          className="block w-full rounded-md bg-ink px-4 py-3 text-center text-sm font-medium text-paper"
         >
-          Propose swap
-        </Link>
-      </div>
-
-      <div className="mt-6 divide-y divide-subtle rounded-md border border-subtle bg-paper text-sm dark:divide-neutral-800 dark:border-neutral-800">
-        <div className="flex items-center justify-between px-4 py-3">
-          <span className="text-muted">Condition</span>
-          <span className="font-medium">
-            {book.condition === "good" ? "Good" : "Worn"}
-          </span>
-        </div>
-        <Link
-          href={`/app/users/${book.owner_id}`}
-          className="flex items-center justify-between px-4 py-3 hover:bg-cream-dim dark:hover:bg-ink"
-        >
-          <span className="text-muted">Owner</span>
-          <span className="flex items-center gap-1 font-medium">
-            <span className="underline underline-offset-4">
-              {book.owner_first_name ?? "—"}
-            </span>
-            <span aria-hidden className="text-muted">
-              ›
-            </span>
-          </span>
+          Propose a swap
         </Link>
       </div>
     </main>
+  );
+}
+
+function Avatar() {
+  // Decorative gradient circle — no user avatars in v0. Keeps the owner card
+  // visually grounded without requiring image uploads.
+  return (
+    <div
+      aria-hidden
+      className="h-9 w-9 shrink-0 rounded-full bg-gradient-to-br from-[#d6c8a6] to-[#b39d6f]"
+    />
   );
 }
