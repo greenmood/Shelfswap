@@ -17,8 +17,6 @@ export default async function ProposePage({
   }
   const supabase = await createClient();
 
-  // Fetch the requested book + my available books + my open swaps for this
-  // same requested book, all in parallel.
   const [requestedResult, myBooksResult, openSwapsResult] = await Promise.all([
     supabase
       .from("discoverable_books")
@@ -57,57 +55,63 @@ export default async function ProposePage({
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6">
+    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6 md:max-w-lg">
       <Link
         href={`/app/discover/books/${id}`}
-        className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
+        className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted hover:text-ink"
       >
         ← Book
       </Link>
 
-      <h1 className="mt-6 font-serif text-2xl font-medium tracking-tight">Propose a swap</h1>
+      <h1 className="mt-4 font-serif text-2xl font-medium tracking-tight">
+        Propose a swap
+      </h1>
 
-      <section className="mt-8 space-y-3">
-        <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
-          You want
-        </p>
-        <div className="flex items-start gap-4 rounded-md border border-subtle bg-paper p-4 dark:border-neutral-800">
-          <BookCover
-            cover_url={requested.cover_url}
-            alt={requested.title}
-            size="md"
-          />
-          <div className="min-w-0 flex-1 space-y-1">
-            <p className="font-medium">{requested.title}</p>
-            {requested.author && (
-              <p className="text-sm text-muted">{requested.author}</p>
-            )}
-            <p className="text-xs text-muted">
-              From {requested.owner_first_name ?? "someone"}
+      {/* Target card — the book you want. Accent-soft bg signals which
+          direction of the swap this row represents. */}
+      <section className="mt-6 flex items-start gap-3 rounded-md bg-accent-soft p-3">
+        <BookCover
+          cover_url={requested.cover_url}
+          alt={requested.title}
+          size="sm"
+        />
+        <div className="min-w-0 flex-1 space-y-0.5">
+          <p className="font-mono text-[9px] font-medium uppercase tracking-widest text-accent">
+            You want
+          </p>
+          <p className="line-clamp-2 font-serif text-sm font-medium leading-tight">
+            {requested.title}
+          </p>
+          {requested.author && (
+            <p className="line-clamp-1 text-xs text-muted">
+              {requested.author}
             </p>
-          </div>
+          )}
+          <p className="pt-0.5 font-mono text-[10px] text-muted">
+            from {requested.owner_first_name ?? "someone"}
+          </p>
         </div>
       </section>
 
-      <section className="mt-8 space-y-3">
-        <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
-          Offer in return
-        </p>
+      <p className="mt-6 font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
+        Offer in return (pick one)
+      </p>
 
-        {myBooks.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 rounded-md border border-dashed border-subtle p-6 text-center dark:border-neutral-700">
-            <p className="text-sm">You don&rsquo;t have any available books.</p>
-            <Link
-              href="/app/add"
-              className="inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper dark:bg-paper dark:text-ink"
-            >
-              <span aria-hidden>＋</span> Add a book
-            </Link>
-          </div>
-        ) : (
-          <ProposeForm requestedBookId={requested.id} myBooks={myBooks} />
-        )}
-      </section>
+      {myBooks.length === 0 ? (
+        <div className="mt-3 flex flex-col items-center gap-3 rounded-md border border-dashed border-subtle bg-cream-dim/40 p-6 text-center">
+          <p className="text-sm">
+            You don&rsquo;t have any available books to offer.
+          </p>
+          <Link
+            href="/app/add"
+            className="inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper"
+          >
+            <span aria-hidden>＋</span> Add a book
+          </Link>
+        </div>
+      ) : (
+        <ProposeForm requestedBookId={requested.id} myBooks={myBooks} />
+      )}
     </main>
   );
 }

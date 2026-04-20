@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { BookCover } from "@/components/book-cover";
+import { RadioDot } from "@/components/radio-dot";
 
 type MyBook = {
   id: string;
@@ -71,17 +72,17 @@ export function ProposeForm({
 
   if (!success && allLocked) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-md border border-dashed border-subtle p-6 text-center dark:border-neutral-700">
-        <p className="text-sm font-medium">
+      <div className="mt-3 flex flex-col items-center gap-3 rounded-md border border-dashed border-subtle bg-cream-dim/40 p-6 text-center">
+        <p className="font-serif text-base font-medium">
           You&rsquo;ve already proposed every book
         </p>
-        <p className="text-sm text-muted">
+        <p className="max-w-xs text-sm text-muted">
           Each of your available books is in an open swap for this one. Wait
           for one to resolve or add a new book.
         </p>
         <Link
           href="/app/discover"
-          className="mt-2 inline-flex items-center gap-2 rounded-md border border-subtle px-4 py-2 text-sm font-medium hover:bg-cream-dim dark:border-neutral-700 dark:hover:bg-ink"
+          className="mt-2 inline-flex items-center gap-2 rounded-md border border-subtle bg-paper px-4 py-2 text-sm font-medium hover:bg-cream-dim"
         >
           Back to Discover
         </Link>
@@ -91,16 +92,16 @@ export function ProposeForm({
 
   if (success) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-md border border-subtle bg-accepted-bg p-6 text-center dark:border-emerald-900 dark:bg-emerald-950">
-        <p className="text-sm font-medium text-accepted-fg dark:text-emerald-300">
+      <div className="mt-3 flex flex-col items-center gap-3 rounded-md border border-subtle bg-accepted-bg p-6 text-center">
+        <p className="font-serif text-base font-medium text-accepted-fg">
           Swap proposed
         </p>
-        <p className="text-sm text-muted dark:text-muted">
+        <p className="max-w-xs text-sm text-muted">
           The owner will be notified. You&rsquo;ll see it under My Swaps.
         </p>
         <Link
           href="/app/discover"
-          className="mt-2 inline-flex items-center gap-2 rounded-md border border-subtle px-4 py-2 text-sm font-medium hover:bg-cream-dim dark:border-neutral-700 dark:hover:bg-ink"
+          className="mt-2 inline-flex items-center gap-2 rounded-md border border-subtle bg-paper px-4 py-2 text-sm font-medium hover:bg-cream-dim"
         >
           Back to Discover
         </Link>
@@ -109,24 +110,21 @@ export function ProposeForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <ul className="space-y-2">
+    <form onSubmit={handleSubmit} className="mt-3 space-y-6">
+      <ul className="overflow-hidden rounded-md bg-paper">
         {myBooks.map((book) => {
           const isLocked = book.locked;
           const isSelected = selectedId === book.id;
           return (
-            <li key={book.id}>
+            <li
+              key={book.id}
+              className="border-b border-divider last:border-b-0"
+            >
               <label
-                className={`flex items-start gap-3 rounded-md border p-3 ${
+                className={`flex items-center gap-3 px-4 py-3 transition ${
                   isLocked
-                    ? "cursor-not-allowed border-subtle opacity-50 dark:border-neutral-800"
-                    : "cursor-pointer"
-                } ${
-                  !isLocked && isSelected
-                    ? "border-ink dark:border-white"
-                    : !isLocked
-                      ? "border-subtle dark:border-neutral-800"
-                      : ""
+                    ? "cursor-not-allowed opacity-50"
+                    : "cursor-pointer hover:bg-cream-dim/40"
                 }`}
               >
                 <input
@@ -136,15 +134,16 @@ export function ProposeForm({
                   checked={isSelected}
                   onChange={() => setSelectedId(book.id)}
                   disabled={isLocked}
-                  className="mt-1"
+                  className="sr-only"
                 />
+                <RadioDot checked={isSelected} />
                 <BookCover
                   cover_url={book.cover_url}
                   alt={book.title}
                   size="sm"
                 />
-                <div className="min-w-0 flex-1 space-y-1">
-                  <p className="line-clamp-2 text-sm font-medium">
+                <div className="min-w-0 flex-1 space-y-0.5">
+                  <p className="line-clamp-2 font-serif text-sm font-medium leading-tight">
                     {book.title}
                   </p>
                   {book.author && (
@@ -153,8 +152,8 @@ export function ProposeForm({
                     </p>
                   )}
                   {isLocked && (
-                    <p className="text-xs text-muted">
-                      Already in an open swap for this book.
+                    <p className="pt-0.5 font-mono text-[10px] uppercase tracking-widest text-muted">
+                      Already in an open swap
                     </p>
                   )}
                 </div>
@@ -164,15 +163,17 @@ export function ProposeForm({
         })}
       </ul>
 
-      <div className="flex items-center gap-3">
+      <div className="space-y-3">
         <button
           type="submit"
           disabled={!selectedId || isSubmitting}
-          className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper disabled:opacity-50 dark:bg-paper dark:text-ink"
+          className="w-full rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper disabled:opacity-50"
         >
-          {isSubmitting ? "Proposing…" : "Propose swap"}
+          {isSubmitting ? "Sending…" : "Send request"}
         </button>
-        {error && <span className="text-sm text-red-600">{error}</span>}
+        {error && (
+          <p className="text-center text-sm text-red-600">{error}</p>
+        )}
       </div>
     </form>
   );

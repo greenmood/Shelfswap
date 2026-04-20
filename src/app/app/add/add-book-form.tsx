@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { BookCover } from "@/components/book-cover";
 import { ConditionChips } from "@/components/condition-chips";
+import { RadioDot } from "@/components/radio-dot";
 import { addBook, type AddBookInput } from "./actions";
 
 type SearchResult = {
@@ -238,7 +239,9 @@ export function AddBookForm() {
                         </p>
                       )}
                     </div>
-                    <RadioDot checked={isSelected} />
+                    <span className="mt-1">
+                      <RadioDot checked={isSelected} />
+                    </span>
                   </button>
                 </li>
               );
@@ -314,19 +317,6 @@ function SearchField({
         className="w-full rounded-md border border-subtle bg-paper py-2 pl-9 pr-3 text-sm outline-none focus:border-ink"
       />
     </div>
-  );
-}
-
-function RadioDot({ checked }: { checked: boolean }) {
-  return (
-    <span
-      aria-hidden
-      className={`mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${
-        checked ? "border-ink" : "border-subtle"
-      }`}
-    >
-      {checked && <span className="h-2 w-2 rounded-full bg-ink" />}
-    </span>
   );
 }
 
