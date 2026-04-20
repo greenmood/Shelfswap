@@ -21,15 +21,15 @@ export default async function ProfilePage() {
       <div className="flex items-center justify-between">
         <Link
           href="/app"
-          className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+          className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
         >
           ← Library
         </Link>
       </div>
 
       <div className="mt-8 space-y-2">
-        <h1 className="text-2xl font-semibold">Profile</h1>
-        <p className="text-sm text-neutral-500">
+        <h1 className="font-serif text-2xl font-medium tracking-tight">Profile</h1>
+        <p className="text-sm text-muted">
           Signed in as <span className="font-mono">{user.email}</span>
         </p>
       </div>

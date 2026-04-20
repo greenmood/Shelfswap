@@ -39,7 +39,7 @@ export default async function DiscoverBookPage({
     <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
       <Link
         href="/app/discover"
-        className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+        className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
       >
         ← Discover
       </Link>
@@ -51,9 +51,9 @@ export default async function DiscoverBookPage({
           size="lg"
         />
         <div className="space-y-1 text-center">
-          <h1 className="text-xl font-semibold">{book.title}</h1>
+          <h1 className="font-serif text-xl font-medium tracking-tight">{book.title}</h1>
           {book.author && (
-            <p className="text-sm text-neutral-500">{book.author}</p>
+            <p className="text-sm text-muted">{book.author}</p>
           )}
         </div>
       </div>
@@ -61,29 +61,29 @@ export default async function DiscoverBookPage({
       <div className="mt-8">
         <Link
           href={`/app/discover/books/${book.id}/propose`}
-          className="inline-flex items-center gap-2 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-neutral-900"
+          className="inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper dark:bg-paper dark:text-ink"
         >
           Propose swap
         </Link>
       </div>
 
-      <div className="mt-6 divide-y divide-neutral-200 rounded-md border border-neutral-200 text-sm dark:divide-neutral-800 dark:border-neutral-800">
+      <div className="mt-6 divide-y divide-subtle rounded-md border border-subtle text-sm dark:divide-neutral-800 dark:border-neutral-800">
         <div className="flex items-center justify-between px-4 py-3">
-          <span className="text-neutral-500">Condition</span>
+          <span className="text-muted">Condition</span>
           <span className="font-medium">
             {book.condition === "good" ? "Good" : "Worn"}
           </span>
         </div>
         <Link
           href={`/app/users/${book.owner_id}`}
-          className="flex items-center justify-between px-4 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-900"
+          className="flex items-center justify-between px-4 py-3 hover:bg-cream-dim dark:hover:bg-ink"
         >
-          <span className="text-neutral-500">Owner</span>
+          <span className="text-muted">Owner</span>
           <span className="flex items-center gap-1 font-medium">
             <span className="underline underline-offset-4">
               {book.owner_first_name ?? "—"}
             </span>
-            <span aria-hidden className="text-neutral-400">
+            <span aria-hidden className="text-muted">
               ›
             </span>
           </span>

@@ -46,7 +46,7 @@ export function SwapsTabs({
     <div className="mt-6 space-y-4">
       <div
         role="tablist"
-        className="grid grid-cols-2 rounded-md border border-neutral-200 p-1 text-sm dark:border-neutral-800"
+        className="grid grid-cols-2 rounded-md border border-subtle p-1 text-sm dark:border-neutral-800"
       >
         <TabButton
           label="Incoming"
@@ -94,8 +94,8 @@ function TabButton({
       onClick={onClick}
       className={`rounded px-3 py-1.5 font-medium transition ${
         active
-          ? "bg-neutral-900 text-white dark:bg-white dark:text-neutral-900"
-          : "text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+          ? "bg-ink text-paper dark:bg-paper dark:text-ink"
+          : "text-muted hover:text-ink dark:hover:text-neutral-100"
       }`}
     >
       {label}{" "}
@@ -106,8 +106,8 @@ function TabButton({
 
 function EmptyState({ tab }: { tab: Tab }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-md border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-700">
-      <p className="text-sm text-neutral-500">
+    <div className="flex flex-col items-center gap-3 rounded-md border border-dashed border-subtle p-8 text-center dark:border-neutral-700">
+      <p className="text-sm text-muted">
         {tab === "incoming"
           ? "No one's asked for your books yet."
           : "You haven't proposed any swaps."}
@@ -115,7 +115,7 @@ function EmptyState({ tab }: { tab: Tab }) {
       {tab === "outgoing" && (
         <Link
           href="/app/discover"
-          className="inline-flex items-center gap-2 rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
+          className="inline-flex items-center gap-2 rounded-md border border-subtle px-3 py-2 text-sm font-medium hover:bg-cream-dim dark:border-neutral-700 dark:hover:bg-ink"
         >
           Browse Discover
         </Link>
@@ -142,17 +142,17 @@ function SwapItem({ swap, tab }: { swap: SwapRow; tab: Tab }) {
     <li>
       <Link
         href={`/app/swaps/${swap.id}`}
-        className="flex items-start gap-3 rounded-md border border-neutral-200 p-3 hover:border-neutral-400 dark:border-neutral-800 dark:hover:border-neutral-600"
+        className="flex items-start gap-3 rounded-md border border-subtle p-3 hover:border-ink dark:border-neutral-800 dark:hover:border-neutral-600"
       >
         <BookCover cover_url={requestedCover} alt={requestedTitle} size="md" />
         <div className="min-w-0 flex-1 space-y-1">
           <p className="line-clamp-2 text-sm font-medium">{requestedTitle}</p>
           {requestedAuthor && (
-            <p className="line-clamp-1 text-xs text-neutral-500">
+            <p className="line-clamp-1 text-xs text-muted">
               {requestedAuthor}
             </p>
           )}
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-muted">
             {tab === "incoming" ? "From " : "To "}
             <span className="font-medium">{otherName}</span>
             {" · for "}

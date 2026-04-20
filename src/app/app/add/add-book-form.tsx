@@ -121,7 +121,7 @@ export function AddBookForm() {
         <button
           type="button"
           onClick={switchToSearch}
-          className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+          className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
         >
           ← Back to search
         </button>
@@ -149,13 +149,13 @@ export function AddBookForm() {
           <button
             type="submit"
             disabled={isSaving || !manualTitle.trim()}
-            className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-neutral-900"
+            className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper disabled:opacity-50 dark:bg-paper dark:text-ink"
           >
             {isSaving ? "Adding…" : "Add to library"}
           </button>
           <Link
             href="/app"
-            className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+            className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
           >
             Cancel
           </Link>
@@ -170,7 +170,7 @@ export function AddBookForm() {
   if (selected) {
     return (
       <form onSubmit={handleSubmitSelected} className="mt-6 space-y-6">
-        <div className="flex items-start gap-4 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">
+        <div className="flex items-start gap-4 rounded-md border border-subtle p-4 dark:border-neutral-800">
           <BookCover
             cover_url={selected.cover_url}
             alt={selected.title}
@@ -179,12 +179,12 @@ export function AddBookForm() {
           <div className="min-w-0 flex-1 space-y-1">
             <p className="font-medium">{selected.title}</p>
             {selected.author && (
-              <p className="text-sm text-neutral-500">{selected.author}</p>
+              <p className="text-sm text-muted">{selected.author}</p>
             )}
             <button
               type="button"
               onClick={() => setSelected(null)}
-              className="text-xs text-neutral-500 underline hover:text-neutral-900 dark:hover:text-neutral-100"
+              className="text-xs text-muted underline hover:text-ink dark:hover:text-neutral-100"
             >
               Pick a different result
             </button>
@@ -197,13 +197,13 @@ export function AddBookForm() {
           <button
             type="submit"
             disabled={isSaving}
-            className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-neutral-900"
+            className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper disabled:opacity-50 dark:bg-paper dark:text-ink"
           >
             {isSaving ? "Adding…" : "Add to library"}
           </button>
           <Link
             href="/app"
-            className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+            className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
           >
             Cancel
           </Link>
@@ -226,17 +226,17 @@ export function AddBookForm() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search by title or author…"
-        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
+        className="w-full rounded-md border border-subtle px-3 py-2 text-sm outline-none focus:border-ink dark:border-neutral-700 dark:bg-ink"
       />
 
       {status === "searching" && (
-        <p className="text-sm text-neutral-500">Searching…</p>
+        <p className="text-sm text-muted">Searching…</p>
       )}
       {status === "error" && searchError && (
         <p className="text-sm text-red-600">{searchError}</p>
       )}
       {noMatches && (
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-muted">
           No matches for “{query.trim()}”.
         </p>
       )}
@@ -247,13 +247,13 @@ export function AddBookForm() {
             <button
               type="button"
               onClick={() => setSelected(r)}
-              className="flex w-full items-start gap-3 rounded-md border border-neutral-200 p-3 text-left hover:border-neutral-400 dark:border-neutral-800 dark:hover:border-neutral-600"
+              className="flex w-full items-start gap-3 rounded-md border border-subtle p-3 text-left hover:border-ink dark:border-neutral-800 dark:hover:border-neutral-600"
             >
               <BookCover cover_url={r.cover_url} alt={r.title} size="sm" />
               <div className="min-w-0 flex-1">
                 <p className="line-clamp-2 text-sm font-medium">{r.title}</p>
                 {r.author && (
-                  <p className="line-clamp-1 text-xs text-neutral-500">
+                  <p className="line-clamp-1 text-xs text-muted">
                     {r.author}
                   </p>
                 )}
@@ -263,11 +263,11 @@ export function AddBookForm() {
         ))}
       </ul>
 
-      <div className="border-t border-neutral-200 pt-4 dark:border-neutral-800">
+      <div className="border-t border-subtle pt-4 dark:border-neutral-800">
         <button
           type="button"
           onClick={switchToManual}
-          className="text-sm text-neutral-600 underline hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-neutral-100"
+          className="text-sm text-muted underline hover:text-ink dark:text-muted dark:hover:text-neutral-100"
         >
           {query.trim()
             ? `Can't find it? Add “${query.trim()}” manually →`
@@ -306,7 +306,7 @@ function Field({
         placeholder={placeholder}
         required={required}
         autoFocus={autoFocus}
-        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
+        className="w-full rounded-md border border-subtle px-3 py-2 text-sm outline-none focus:border-ink dark:border-neutral-700 dark:bg-ink"
       />
     </label>
   );

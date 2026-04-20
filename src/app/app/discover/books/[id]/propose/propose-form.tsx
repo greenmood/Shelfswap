@@ -71,17 +71,17 @@ export function ProposeForm({
 
   if (!success && allLocked) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-md border border-dashed border-neutral-300 p-6 text-center dark:border-neutral-700">
+      <div className="flex flex-col items-center gap-3 rounded-md border border-dashed border-subtle p-6 text-center dark:border-neutral-700">
         <p className="text-sm font-medium">
           You&rsquo;ve already proposed every book
         </p>
-        <p className="text-sm text-neutral-500">
+        <p className="text-sm text-muted">
           Each of your available books is in an open swap for this one. Wait
           for one to resolve or add a new book.
         </p>
         <Link
           href="/app/discover"
-          className="mt-2 inline-flex items-center gap-2 rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
+          className="mt-2 inline-flex items-center gap-2 rounded-md border border-subtle px-4 py-2 text-sm font-medium hover:bg-cream-dim dark:border-neutral-700 dark:hover:bg-ink"
         >
           Back to Discover
         </Link>
@@ -91,16 +91,16 @@ export function ProposeForm({
 
   if (success) {
     return (
-      <div className="flex flex-col items-center gap-3 rounded-md border border-emerald-200 bg-emerald-50 p-6 text-center dark:border-emerald-900 dark:bg-emerald-950">
-        <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300">
+      <div className="flex flex-col items-center gap-3 rounded-md border border-subtle bg-accepted-bg p-6 text-center dark:border-emerald-900 dark:bg-emerald-950">
+        <p className="text-sm font-medium text-accepted-fg dark:text-emerald-300">
           Swap proposed
         </p>
-        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+        <p className="text-sm text-muted dark:text-muted">
           The owner will be notified. You&rsquo;ll see it under My Swaps.
         </p>
         <Link
           href="/app/discover"
-          className="mt-2 inline-flex items-center gap-2 rounded-md border border-neutral-300 px-4 py-2 text-sm font-medium hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
+          className="mt-2 inline-flex items-center gap-2 rounded-md border border-subtle px-4 py-2 text-sm font-medium hover:bg-cream-dim dark:border-neutral-700 dark:hover:bg-ink"
         >
           Back to Discover
         </Link>
@@ -119,13 +119,13 @@ export function ProposeForm({
               <label
                 className={`flex items-start gap-3 rounded-md border p-3 ${
                   isLocked
-                    ? "cursor-not-allowed border-neutral-200 opacity-50 dark:border-neutral-800"
+                    ? "cursor-not-allowed border-subtle opacity-50 dark:border-neutral-800"
                     : "cursor-pointer"
                 } ${
                   !isLocked && isSelected
-                    ? "border-neutral-900 dark:border-white"
+                    ? "border-ink dark:border-white"
                     : !isLocked
-                      ? "border-neutral-200 dark:border-neutral-800"
+                      ? "border-subtle dark:border-neutral-800"
                       : ""
                 }`}
               >
@@ -148,12 +148,12 @@ export function ProposeForm({
                     {book.title}
                   </p>
                   {book.author && (
-                    <p className="line-clamp-1 text-xs text-neutral-500">
+                    <p className="line-clamp-1 text-xs text-muted">
                       {book.author}
                     </p>
                   )}
                   {isLocked && (
-                    <p className="text-xs text-neutral-500">
+                    <p className="text-xs text-muted">
                       Already in an open swap for this book.
                     </p>
                   )}
@@ -168,7 +168,7 @@ export function ProposeForm({
         <button
           type="submit"
           disabled={!selectedId || isSubmitting}
-          className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-neutral-900"
+          className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper disabled:opacity-50 dark:bg-paper dark:text-ink"
         >
           {isSubmitting ? "Proposing…" : "Propose swap"}
         </button>

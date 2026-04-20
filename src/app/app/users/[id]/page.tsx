@@ -41,27 +41,27 @@ export default async function UserProfilePage({
     <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
       <Link
         href="/app/discover"
-        className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+        className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
       >
         ← Discover
       </Link>
 
       <div className="mt-8 space-y-1">
-        <h1 className="text-2xl font-semibold">{profile.first_name ?? "—"}</h1>
+        <h1 className="font-serif text-2xl font-medium tracking-tight">{profile.first_name ?? "—"}</h1>
       </div>
 
-      <section className="mt-8 space-y-3 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">
-        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+      <section className="mt-8 space-y-3 rounded-md border border-subtle p-4 dark:border-neutral-800">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
           Reachable via
         </p>
         {channels.length > 0 ? (
           <p className="text-sm">{channels.join(" · ")}</p>
         ) : (
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-muted">
             No contact channels set up.
           </p>
         )}
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-muted">
           Full handles are revealed once a swap is accepted.
         </p>
       </section>

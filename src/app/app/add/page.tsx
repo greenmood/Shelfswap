@@ -14,15 +14,15 @@ export default async function AddBookPage() {
       <div className="flex items-center justify-between">
         <Link
           href="/app"
-          className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+          className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
         >
           ← Library
         </Link>
       </div>
 
       <div className="mt-6 space-y-1">
-        <h1 className="text-2xl font-semibold">Add a book</h1>
-        <p className="text-sm text-neutral-500">
+        <h1 className="font-serif text-2xl font-medium tracking-tight">Add a book</h1>
+        <p className="text-sm text-muted">
           Search Open Library, pick a match, set condition, save.
         </p>
       </div>

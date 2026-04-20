@@ -46,7 +46,7 @@ export default async function SwapsPage() {
       <div className="flex items-center justify-between">
         <Link
           href="/app"
-          className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+          className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
         >
           ← Library
         </Link>

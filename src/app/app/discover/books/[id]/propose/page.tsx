@@ -60,7 +60,7 @@ export default async function ProposePage({
     <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
       <Link
         href={`/app/discover/books/${id}`}
-        className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+        className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
       >
         ← Book
       </Link>
@@ -68,10 +68,10 @@ export default async function ProposePage({
       <h1 className="mt-6 text-2xl font-semibold">Propose a swap</h1>
 
       <section className="mt-8 space-y-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
           You want
         </p>
-        <div className="flex items-start gap-4 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">
+        <div className="flex items-start gap-4 rounded-md border border-subtle p-4 dark:border-neutral-800">
           <BookCover
             cover_url={requested.cover_url}
             alt={requested.title}
@@ -80,9 +80,9 @@ export default async function ProposePage({
           <div className="min-w-0 flex-1 space-y-1">
             <p className="font-medium">{requested.title}</p>
             {requested.author && (
-              <p className="text-sm text-neutral-500">{requested.author}</p>
+              <p className="text-sm text-muted">{requested.author}</p>
             )}
-            <p className="text-xs text-neutral-500">
+            <p className="text-xs text-muted">
               From {requested.owner_first_name ?? "someone"}
             </p>
           </div>
@@ -90,16 +90,16 @@ export default async function ProposePage({
       </section>
 
       <section className="mt-8 space-y-3">
-        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
           Offer in return
         </p>
 
         {myBooks.length === 0 ? (
-          <div className="flex flex-col items-center gap-3 rounded-md border border-dashed border-neutral-300 p-6 text-center dark:border-neutral-700">
+          <div className="flex flex-col items-center gap-3 rounded-md border border-dashed border-subtle p-6 text-center dark:border-neutral-700">
             <p className="text-sm">You don&rsquo;t have any available books.</p>
             <Link
               href="/app/add"
-              className="inline-flex items-center gap-2 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-neutral-900"
+              className="inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper dark:bg-paper dark:text-ink"
             >
               <span aria-hidden>＋</span> Add a book
             </Link>

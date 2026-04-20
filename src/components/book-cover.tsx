@@ -23,7 +23,7 @@ export function BookCover({
     return (
       <div
         style={{ width: w, height: h }}
-        className="flex shrink-0 items-center justify-center rounded border border-neutral-200 bg-neutral-50 text-xs text-neutral-400 dark:border-neutral-800 dark:bg-neutral-900"
+        className="flex shrink-0 items-center justify-center rounded border border-subtle bg-cream-dim text-xs text-muted dark:border-neutral-800 dark:bg-ink"
       >
         No cover
       </div>
@@ -36,7 +36,7 @@ export function BookCover({
       alt={alt}
       width={w}
       height={h}
-      className="h-auto shrink-0 rounded border border-neutral-200 object-cover dark:border-neutral-800"
+      className="h-auto shrink-0 rounded border border-subtle object-cover dark:border-neutral-800"
       unoptimized
     />
   );

@@ -64,13 +64,13 @@ export function EditBookForm({
   return (
     <div className="mt-6 space-y-6">
       <form onSubmit={handleSave} className="space-y-5">
-        <div className="flex items-start gap-4 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">
+        <div className="flex items-start gap-4 rounded-md border border-subtle p-4 dark:border-neutral-800">
           <BookCover
             cover_url={book.cover_url}
             alt={book.title}
             size="lg"
           />
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-muted">
             Cover is set from Open Library and not editable here. Delete and
             re-add if you need a different cover.
           </p>
@@ -90,13 +90,13 @@ export function EditBookForm({
           <button
             type="submit"
             disabled={busy || !title.trim()}
-            className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-neutral-900"
+            className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper disabled:opacity-50 dark:bg-paper dark:text-ink"
           >
             {isSaving ? "Saving…" : "Save"}
           </button>
           <Link
             href="/app"
-            className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+            className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
           >
             Cancel
           </Link>
@@ -104,7 +104,7 @@ export function EditBookForm({
         </div>
       </form>
 
-      <div className="border-t border-neutral-200 pt-6 dark:border-neutral-800">
+      <div className="border-t border-subtle pt-6 dark:border-neutral-800">
         {confirmDelete ? (
           <div className="space-y-3">
             <p className="text-sm">
@@ -116,7 +116,7 @@ export function EditBookForm({
                 type="button"
                 onClick={handleDelete}
                 disabled={busy}
-                className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+                className="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-paper disabled:opacity-50"
               >
                 {isDeleting ? "Deleting…" : "Yes, delete"}
               </button>
@@ -124,7 +124,7 @@ export function EditBookForm({
                 type="button"
                 onClick={() => setConfirmDelete(false)}
                 disabled={busy}
-                className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+                className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
               >
                 Cancel
               </button>
@@ -167,7 +167,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required={required}
-        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
+        className="w-full rounded-md border border-subtle px-3 py-2 text-sm outline-none focus:border-ink dark:border-neutral-700 dark:bg-ink"
       />
     </label>
   );

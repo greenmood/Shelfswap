@@ -57,11 +57,11 @@ export function ProfileForm({ initial }: { initial: Profile }) {
         required
       />
 
-      <div className="space-y-3 rounded-md border border-neutral-200 p-4 dark:border-neutral-800">
-        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+      <div className="space-y-3 rounded-md border border-subtle p-4 dark:border-neutral-800">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
           Handles
         </p>
-        <p className="text-xs text-neutral-500">
+        <p className="text-xs text-muted">
           Shared with the other person only after a swap is accepted. At least
           one required.
         </p>
@@ -95,7 +95,7 @@ export function ProfileForm({ initial }: { initial: Profile }) {
         <button
           type="submit"
           disabled={status === "saving"}
-          className="rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50 dark:bg-white dark:text-neutral-900"
+          className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper disabled:opacity-50 dark:bg-paper dark:text-ink"
         >
           {status === "saving" ? "Saving…" : "Save"}
         </button>
@@ -137,9 +137,9 @@ function Field({
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         required={required}
-        className="w-full rounded-md border border-neutral-300 px-3 py-2 text-sm outline-none focus:border-neutral-500 dark:border-neutral-700 dark:bg-neutral-900"
+        className="w-full rounded-md border border-subtle px-3 py-2 text-sm outline-none focus:border-ink dark:border-neutral-700 dark:bg-ink"
       />
-      {hint && <span className="block text-xs text-neutral-500">{hint}</span>}
+      {hint && <span className="block text-xs text-muted">{hint}</span>}
     </label>
   );
 }

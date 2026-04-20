@@ -24,24 +24,24 @@ export default async function AppHome() {
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
       <header className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Library</h1>
+        <h1 className="font-serif text-2xl font-medium tracking-tight">Library</h1>
         <div className="flex items-center gap-4">
           <Link
             href="/app/discover"
-            className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+            className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
           >
             Discover
           </Link>
           <Link
             href="/app/swaps"
-            className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+            className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
           >
             Swaps
           </Link>
           <Link
             href="/app/profile"
             aria-label="Profile"
-            className="text-xl text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+            className="text-xl text-muted hover:text-ink dark:hover:text-neutral-100"
           >
             ⚙︎
           </Link>
@@ -50,17 +50,17 @@ export default async function AppHome() {
 
       <div className="mt-6 space-y-3">
         {profile?.first_name ? (
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-muted">
             Hi, {profile.first_name}.
           </p>
         ) : (
           <div className="space-y-2">
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-muted">
               Set up your profile to get started.
             </p>
             <Link
               href="/app/profile"
-              className="inline-block rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-neutral-900"
+              className="inline-block rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper dark:bg-paper dark:text-ink"
             >
               Complete profile
             </Link>
@@ -69,14 +69,14 @@ export default async function AppHome() {
       </div>
 
       {books && books.length === 0 ? (
-        <div className="mt-8 flex flex-col items-center gap-3 rounded-md border border-dashed border-neutral-300 p-8 text-center dark:border-neutral-700">
+        <div className="mt-8 flex flex-col items-center gap-3 rounded-md border border-dashed border-subtle p-8 text-center dark:border-neutral-700">
           <p className="text-base font-medium">Your library is empty</p>
-          <p className="text-sm text-neutral-500">
+          <p className="text-sm text-muted">
             Search Open Library or type in books by hand.
           </p>
           <Link
             href="/app/add"
-            className="mt-2 inline-flex items-center gap-2 rounded-md bg-neutral-900 px-4 py-2 text-sm font-medium text-white dark:bg-white dark:text-neutral-900"
+            className="mt-2 inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper dark:bg-paper dark:text-ink"
           >
             <span aria-hidden>＋</span> Add your first book
           </Link>
@@ -86,7 +86,7 @@ export default async function AppHome() {
           <div className="mt-6">
             <Link
               href="/app/add"
-              className="inline-flex items-center gap-2 rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-900"
+              className="inline-flex items-center gap-2 rounded-md border border-subtle px-3 py-2 text-sm font-medium hover:bg-cream-dim dark:border-neutral-700 dark:hover:bg-ink"
             >
               <span aria-hidden>＋</span> Add book
             </Link>
@@ -96,7 +96,7 @@ export default async function AppHome() {
             {books?.map((book) => (
               <li
                 key={book.id}
-                className="flex items-start gap-3 rounded-md border border-neutral-200 p-3 dark:border-neutral-800"
+                className="flex items-start gap-3 rounded-md border border-subtle p-3 dark:border-neutral-800"
               >
                 <Link
                   href={`/app/books/${book.id}`}
@@ -112,7 +112,7 @@ export default async function AppHome() {
                       {book.title}
                     </p>
                     {book.author && (
-                      <p className="line-clamp-1 text-xs text-neutral-500">
+                      <p className="line-clamp-1 text-xs text-muted">
                         {book.author}
                       </p>
                     )}

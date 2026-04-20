@@ -1,26 +1,63 @@
 @import "tailwindcss";
 
+/*
+ * Switch `dark:` utilities from media-based to class-based, and since we
+ * never add a `.dark` ancestor, this makes them inert. Kept because
+ * ripping them out of every component would be high-churn; they'll stay
+ * dormant until we design a dark palette (not in scope for v0).
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Shelfswap palette — lifted from user-data/shelfswap_v0_wireframes.html.
+ * Warm paper aesthetic: cream background, ink (warm near-black) text,
+ * taupe muted, burnt-orange accent. Used by utilities like bg-cream,
+ * text-ink, border-subtle, bg-pending-bg, etc.
+ *
+ * Typography:
+ *   font-serif → Fraunces (titles, book titles, headings)
+ *   font-sans  → Instrument Sans (body, default)
+ *   font-mono  → JetBrains Mono (labels, metadata, pills, chips)
+ * Fonts are wired via next/font/google in layout.tsx and exposed as CSS
+ * variables; we alias them through @theme below.
+ */
+
+@theme {
+  --color-cream: #faf6ee;
+  --color-cream-dim: #f3ede0;
+  --color-paper: #ffffff;
+  --color-ink: #1a1814;
+  --color-muted: #78726a;
+  --color-subtle: #e4ddcd;
+  --color-divider: #efe9db;
+  --color-placeholder: #e8e1cf;
+  --color-accent: #7c2d12;
+  --color-accent-soft: #fdf1e4;
+  --color-pending-bg: #fff5db;
+  --color-pending-fg: #8a5a00;
+  --color-accepted-bg: #e3efd9;
+  --color-accepted-fg: #2e5a1f;
+
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, serif;
+  --font-sans:
+    var(--font-instrument-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono:
+    var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+/*
+ * Force light mode. Wireframes have no dark design; auto-dark would turn
+ * the cream paper into arbitrary dark colors. Dark utility classes
+ * (`dark:*`) in existing components become inert under this setup.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
 }

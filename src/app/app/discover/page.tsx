@@ -28,14 +28,14 @@ export default async function DiscoverPage() {
       <div className="flex items-center justify-between">
         <Link
           href="/app"
-          className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+          className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
         >
           ← Library
         </Link>
       </div>
 
       <h1 className="mt-6 text-2xl font-semibold">Discover</h1>
-      <p className="mt-1 text-sm text-neutral-500">
+      <p className="mt-1 text-sm text-muted">
         Books other people have put up for swap.
       </p>
 

@@ -105,24 +105,24 @@ export default async function SwapDetailPage({
     <main className="mx-auto flex min-h-screen max-w-md flex-col p-6">
       <Link
         href="/app/swaps"
-        className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+        className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
       >
         ← My Swaps
       </Link>
 
       <div className="mt-6 flex items-start justify-between gap-4">
-        <h1 className="text-2xl font-semibold">Swap</h1>
+        <h1 className="font-serif text-2xl font-medium tracking-tight">Swap</h1>
         <StatusPill status={swap.status} />
       </div>
 
-      <p className="mt-2 text-sm text-neutral-500">
+      <p className="mt-2 text-sm text-muted">
         {isOwner
           ? `${otherPartyName} wants one of your books.`
           : `You want ${otherPartyName}’s book.`}
       </p>
 
       <section className="mt-8 space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
           {isOwner ? "They want" : "You want"}
         </p>
         <BookRow book={swap.requested} />
@@ -130,37 +130,37 @@ export default async function SwapDetailPage({
 
       <div
         aria-hidden
-        className="my-3 text-center text-sm text-neutral-400"
+        className="my-3 text-center text-sm text-muted"
       >
         ↓ in exchange for
       </div>
 
       <section className="space-y-2">
-        <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+        <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
           {isOwner ? "Their offer" : "Your offer"}
         </p>
         <BookRow book={swap.offered} />
       </section>
 
-      <section className="mt-8 divide-y divide-neutral-200 rounded-md border border-neutral-200 text-sm dark:divide-neutral-800 dark:border-neutral-800">
+      <section className="mt-8 divide-y divide-subtle rounded-md border border-subtle text-sm dark:divide-neutral-800 dark:border-neutral-800">
         <Link
           href={`/app/users/${otherPartyId}`}
-          className="flex items-center justify-between px-4 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-900"
+          className="flex items-center justify-between px-4 py-3 hover:bg-cream-dim dark:hover:bg-ink"
         >
-          <span className="text-neutral-500">
+          <span className="text-muted">
             {isOwner ? "Requested by" : "Owner"}
           </span>
           <span className="flex items-center gap-1 font-medium">
             <span className="underline underline-offset-4">
               {otherPartyName}
             </span>
-            <span aria-hidden className="text-neutral-400">
+            <span aria-hidden className="text-muted">
               ›
             </span>
           </span>
         </Link>
         <div className="flex items-center justify-between px-4 py-3">
-          <span className="text-neutral-500">Proposed</span>
+          <span className="text-muted">Proposed</span>
           <time
             dateTime={swap.created_at}
             className="font-medium"
@@ -172,25 +172,25 @@ export default async function SwapDetailPage({
 
       {canRevealHandles && (
         <section className="mt-8 space-y-3">
-          <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+          <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
             Contact {otherPartyName}
           </p>
           {handles.length > 0 ? (
-            <div className="divide-y divide-neutral-200 rounded-md border border-neutral-200 text-sm dark:divide-neutral-800 dark:border-neutral-800">
+            <div className="divide-y divide-subtle rounded-md border border-subtle text-sm dark:divide-neutral-800 dark:border-neutral-800">
               {handles.map((h) => (
                 <a
                   key={h.label}
                   href={h.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between px-4 py-3 hover:bg-neutral-50 dark:hover:bg-neutral-900"
+                  className="flex items-center justify-between px-4 py-3 hover:bg-cream-dim dark:hover:bg-ink"
                 >
-                  <span className="text-neutral-500">{h.label}</span>
+                  <span className="text-muted">{h.label}</span>
                   <span className="flex items-center gap-1 font-medium">
                     <span className="underline underline-offset-4">
                       {h.display}
                     </span>
-                    <span aria-hidden className="text-neutral-400">
+                    <span aria-hidden className="text-muted">
                       ›
                     </span>
                   </span>
@@ -198,11 +198,11 @@ export default async function SwapDetailPage({
               ))}
             </div>
           ) : (
-            <p className="text-sm text-neutral-500">
+            <p className="text-sm text-muted">
               {otherPartyName} hasn&rsquo;t shared any contact handles.
             </p>
           )}
-          <p className="text-xs text-neutral-500">
+          <p className="text-xs text-muted">
             Tap a handle to open the app and coordinate the swap.
           </p>
         </section>
@@ -239,12 +239,12 @@ function buildHandles(profile: ProfileRef): Handle[] {
 function BookRow({ book }: { book: BookRef | null }) {
   const title = book?.title ?? "Unknown book";
   return (
-    <div className="flex items-start gap-3 rounded-md border border-neutral-200 p-3 dark:border-neutral-800">
+    <div className="flex items-start gap-3 rounded-md border border-subtle p-3 dark:border-neutral-800">
       <BookCover cover_url={book?.cover_url ?? null} alt={title} size="md" />
       <div className="min-w-0 flex-1 space-y-1">
         <p className="line-clamp-2 text-sm font-medium">{title}</p>
         {book?.author && (
-          <p className="line-clamp-1 text-xs text-neutral-500">
+          <p className="line-clamp-1 text-xs text-muted">
             {book.author}
           </p>
         )}
