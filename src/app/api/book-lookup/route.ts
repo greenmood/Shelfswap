@@ -43,19 +43,31 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "query_too_long" }, { status: 400 });
   }
 
+  // Cyrillic in the query is our signal that the user is looking for a
+  // Ukrainian/Russian book. Without a language hint, Google Books and Open
+  // Library both dilute results with transliterated English matches.
+  const cyrillic = /\p{Script=Cyrillic}/u.test(q);
+
   // Fire both in parallel. Each helper catches its own errors and returns [],
   // so one source failing never kills the whole response.
   const [openLibrary, googleBooks] = await Promise.all([
-    searchOpenLibrary(q),
-    searchGoogleBooks(q),
+    searchOpenLibrary(q, cyrillic),
+    searchGoogleBooks(q, cyrillic),
   ]);
 
-  const merged = dedupe([...openLibrary, ...googleBooks]).slice(0, FINAL_LIMIT);
+  const merged = dedupe(
+    [...openLibrary, ...googleBooks],
+    cyrillic,
+  ).slice(0, FINAL_LIMIT);
   return NextResponse.json(merged);
 }
 
-async function searchOpenLibrary(q: string): Promise<SearchResult[]> {
-  const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(q)}&limit=${PER_SOURCE_LIMIT}`;
+async function searchOpenLibrary(
+  q: string,
+  cyrillic: boolean,
+): Promise<SearchResult[]> {
+  const langParam = cyrillic ? "&language=ukr" : "";
+  const url = `https://openlibrary.org/search.json?q=${encodeURIComponent(q)}${langParam}&limit=${PER_SOURCE_LIMIT}`;
   try {
     const res = await fetch(url, {
       headers: {
@@ -79,8 +91,12 @@ async function searchOpenLibrary(q: string): Promise<SearchResult[]> {
   }
 }
 
-async function searchGoogleBooks(q: string): Promise<SearchResult[]> {
-  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=${PER_SOURCE_LIMIT}`;
+async function searchGoogleBooks(
+  q: string,
+  cyrillic: boolean,
+): Promise<SearchResult[]> {
+  const langParam = cyrillic ? "&langRestrict=uk" : "";
+  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}${langParam}&maxResults=${PER_SOURCE_LIMIT}`;
   try {
     const res = await fetch(url, { next: { revalidate: CACHE_SECONDS } });
     if (!res.ok) return [];
@@ -104,18 +120,63 @@ async function searchGoogleBooks(q: string): Promise<SearchResult[]> {
   }
 }
 
-function dedupe(results: SearchResult[]): SearchResult[] {
-  const seen = new Set<string>();
-  const out: SearchResult[] = [];
+function dedupe(
+  results: SearchResult[],
+  cyrillicQuery: boolean,
+): SearchResult[] {
+  // Keep first-insertion order but allow later entries to upgrade the stored
+  // record (swap in a Cyrillic title when the query is Cyrillic; fill in a
+  // missing cover).
+  const bucket = new Map<string, SearchResult>();
   for (const r of results) {
-    const key = `${normalize(r.title)}|${normalize(r.author ?? "")}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(r);
+    const key = dedupeKey(r);
+    const existing = bucket.get(key);
+    if (!existing) {
+      bucket.set(key, r);
+      continue;
+    }
+    const existingIsCyrillic = isCyrillic(existing.title);
+    const candidateIsCyrillic = isCyrillic(r.title);
+    if (cyrillicQuery && candidateIsCyrillic && !existingIsCyrillic) {
+      bucket.set(key, { ...r, cover_url: r.cover_url ?? existing.cover_url });
+    } else if (!existing.cover_url && r.cover_url) {
+      bucket.set(key, { ...existing, cover_url: r.cover_url });
+    }
   }
-  return out;
+  return Array.from(bucket.values());
+}
+
+function dedupeKey(r: SearchResult): string {
+  return `${normalize(transliterate(r.title))}|${normalize(transliterate(r.author ?? ""))}`;
+}
+
+function isCyrillic(s: string): boolean {
+  return /\p{Script=Cyrillic}/u.test(s);
 }
 
 function normalize(s: string): string {
-  return s.toLowerCase().trim().replace(/\s+/g, " ");
+  return s
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s]/gu, "")
+    .trim()
+    .replace(/\s+/g, " ");
+}
+
+// Minimal Ukrainian/Russian transliteration (BGN/PCGN-ish). Used only to
+// build a dedup key so "Кобзар / Taras Shevchenko" collapses with "Kobzar /
+// Taras Shevchenko" — it never touches displayed text.
+const CYRILLIC_MAP: Record<string, string> = {
+  а: "a", б: "b", в: "v", г: "h", ґ: "g", д: "d", е: "e", є: "ie",
+  ж: "zh", з: "z", и: "y", і: "i", ї: "i", й: "i", к: "k", л: "l",
+  м: "m", н: "n", о: "o", п: "p", р: "r", с: "s", т: "t", у: "u",
+  ф: "f", х: "kh", ц: "ts", ч: "ch", ш: "sh", щ: "shch", ю: "iu",
+  я: "ia", ь: "", ъ: "", ы: "y", э: "e", ё: "e",
+};
+
+function transliterate(s: string): string {
+  let out = "";
+  for (const ch of s.toLowerCase()) {
+    out += CYRILLIC_MAP[ch] ?? ch;
+  }
+  return out;
 }
