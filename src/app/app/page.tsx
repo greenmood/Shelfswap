@@ -69,14 +69,17 @@ export default async function AppHome() {
       </div>
 
       {books && books.length === 0 ? (
-        <div className="mt-8 flex flex-col items-center gap-3 rounded-md border border-dashed border-subtle p-8 text-center dark:border-neutral-700">
-          <p className="text-base font-medium">Your library is empty</p>
-          <p className="text-sm text-muted">
-            Search Open Library or type in books by hand.
+        <div className="mt-8 flex flex-col items-center gap-2 rounded-md border border-dashed border-subtle bg-cream-dim/40 p-10 text-center">
+          <p className="font-serif text-xl font-medium tracking-tight">
+            Your library is empty
+          </p>
+          <p className="max-w-xs text-sm text-muted">
+            Add books you&rsquo;re happy to swap. Search Open Library or type
+            them in manually.
           </p>
           <Link
             href="/app/add"
-            className="mt-2 inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper dark:bg-paper dark:text-ink"
+            className="mt-4 inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper"
           >
             <span aria-hidden>＋</span> Add your first book
           </Link>

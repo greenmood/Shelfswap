@@ -34,7 +34,7 @@ export default async function DiscoverPage() {
         </Link>
       </div>
 
-      <h1 className="mt-6 text-2xl font-semibold">Discover</h1>
+      <h1 className="mt-6 font-serif text-2xl font-medium tracking-tight">Discover</h1>
       <p className="mt-1 text-sm text-muted">
         Books other people have put up for swap.
       </p>

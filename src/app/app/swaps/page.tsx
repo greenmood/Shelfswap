@@ -52,7 +52,7 @@ export default async function SwapsPage() {
         </Link>
       </div>
 
-      <h1 className="mt-6 text-2xl font-semibold">My Swaps</h1>
+      <h1 className="mt-6 font-serif text-2xl font-medium tracking-tight">My Swaps</h1>
 
       <SwapsTabs
         incoming={(incoming ?? []) as unknown as SwapRow[]}

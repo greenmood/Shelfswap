@@ -65,7 +65,7 @@ export default async function ProposePage({
         ← Book
       </Link>
 
-      <h1 className="mt-6 text-2xl font-semibold">Propose a swap</h1>
+      <h1 className="mt-6 font-serif text-2xl font-medium tracking-tight">Propose a swap</h1>
 
       <section className="mt-8 space-y-3">
         <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">

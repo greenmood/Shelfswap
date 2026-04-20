@@ -36,7 +36,7 @@ export default async function EditBookPage({
         ← Library
       </Link>
 
-      <h1 className="mt-6 text-2xl font-semibold">Edit book</h1>
+      <h1 className="mt-6 font-serif text-2xl font-medium tracking-tight">Edit book</h1>
 
       <EditBookForm
         book={{

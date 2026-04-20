@@ -105,17 +105,27 @@ function TabButton({
 }
 
 function EmptyState({ tab }: { tab: Tab }) {
+  const copy =
+    tab === "incoming"
+      ? {
+          title: "No requests yet",
+          sub: "When someone wants one of your books, it'll show up here.",
+        }
+      : {
+          title: "No proposals yet",
+          sub: "Find a book you want on Discover and propose a swap.",
+        };
+
   return (
-    <div className="flex flex-col items-center gap-3 rounded-md border border-dashed border-subtle p-8 text-center dark:border-neutral-700">
-      <p className="text-sm text-muted">
-        {tab === "incoming"
-          ? "No one's asked for your books yet."
-          : "You haven't proposed any swaps."}
+    <div className="flex flex-col items-center gap-2 rounded-md border border-dashed border-subtle bg-cream-dim/40 p-10 text-center">
+      <p className="font-serif text-xl font-medium tracking-tight">
+        {copy.title}
       </p>
+      <p className="max-w-xs text-sm text-muted">{copy.sub}</p>
       {tab === "outgoing" && (
         <Link
           href="/app/discover"
-          className="inline-flex items-center gap-2 rounded-md border border-subtle px-3 py-2 text-sm font-medium hover:bg-cream-dim dark:border-neutral-700 dark:hover:bg-ink"
+          className="mt-4 inline-flex items-center gap-2 rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper"
         >
           Browse Discover
         </Link>

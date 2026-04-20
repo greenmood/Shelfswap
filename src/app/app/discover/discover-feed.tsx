@@ -142,10 +142,13 @@ export function DiscoverFeed({
       )}
 
       {emptyFeed && (
-        <div className="mt-8 flex flex-col items-center gap-3 rounded-md border border-dashed border-subtle p-8 text-center dark:border-neutral-700">
-          <p className="text-base font-medium">Nothing to discover yet</p>
-          <p className="text-sm text-muted">
-            When someone else adds books, they&rsquo;ll show up here.
+        <div className="mt-8 flex flex-col items-center gap-2 rounded-md border border-dashed border-subtle bg-cream-dim/40 p-10 text-center">
+          <p className="font-serif text-xl font-medium tracking-tight">
+            Nothing to discover yet
+          </p>
+          <p className="max-w-xs text-sm text-muted">
+            When other people add books, they&rsquo;ll show up here. Check
+            back soon.
           </p>
         </div>
       )}
