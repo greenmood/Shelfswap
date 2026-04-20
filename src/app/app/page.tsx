@@ -64,7 +64,7 @@ export default async function AppHome() {
   const hasBooks = booksWithStatus.length > 0;
 
   return (
-    <main className="relative mx-auto flex min-h-screen max-w-md flex-col p-6 pb-24 md:max-w-lg md:pb-6">
+    <main className="relative mx-auto flex min-h-screen max-w-md flex-col p-6 pb-24 md:max-w-4xl md:pb-6">
       <header className="flex items-center justify-between">
         <h1 className="font-serif text-2xl font-medium tracking-tight">
           Library
@@ -131,11 +131,21 @@ export default async function AppHome() {
               <Stat num={stats.inSwap} label="In swap" />
             </div>
 
-            <ul>
-              {booksWithStatus.map((book) => (
+            <ul className="md:grid md:grid-cols-2">
+              {booksWithStatus.map((book, i) => {
+                const len = booksWithStatus.length;
+                // Last-row detection for md grid (2 cols): when len is even,
+                // the last two items; when odd, just the last. Used to drop
+                // the bottom border so the container closes cleanly.
+                const isLastRowMd =
+                  len % 2 === 0 ? i >= len - 2 : i === len - 1;
+                // Right-column divider on left cells only, but not on a
+                // trailing odd item that has no neighbor to its right.
+                const hasRightNeighborMd = i % 2 === 0 && i !== len - 1;
+                return (
                 <li
                   key={book.id}
-                  className="relative flex items-start gap-3 border-b border-divider px-4 py-3 transition last:border-b-0 hover:bg-cream-dim/40"
+                  className={`relative flex items-start gap-3 border-b border-divider px-4 py-3 transition last:border-b-0 hover:bg-cream-dim/40 ${isLastRowMd ? "md:border-b-0" : ""} ${hasRightNeighborMd ? "md:border-r md:border-divider" : ""}`}
                 >
                   {/*
                     Stretched link. Inner static content is pointer-events-none
@@ -177,7 +187,8 @@ export default async function AppHome() {
                     </div>
                   </div>
                 </li>
-              ))}
+                );
+              })}
             </ul>
           </div>
 
