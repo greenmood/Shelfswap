@@ -10,22 +10,17 @@ export default async function AddBookPage() {
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6">
-      <div className="flex items-center justify-between">
-        <Link
-          href="/app"
-          className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
-        >
-          ← Library
-        </Link>
-      </div>
+    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6 md:max-w-lg">
+      <Link
+        href="/app"
+        className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted hover:text-ink"
+      >
+        ← Library
+      </Link>
 
-      <div className="mt-6 space-y-1">
-        <h1 className="font-serif text-2xl font-medium tracking-tight">Add a book</h1>
-        <p className="text-sm text-muted">
-          Search Open Library, pick a match, set condition, save.
-        </p>
-      </div>
+      <h1 className="mt-4 font-serif text-2xl font-medium tracking-tight">
+        Add a book
+      </h1>
 
       <AddBookForm />
     </main>

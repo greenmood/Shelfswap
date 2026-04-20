@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
-import type { BookCondition } from "@/components/condition-radio";
+import type { BookCondition } from "@/components/condition-chips";
 
 export async function setAvailability(bookId: string, isAvailable: boolean) {
   const user = await getCurrentUser();

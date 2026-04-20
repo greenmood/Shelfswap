@@ -4,9 +4,9 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { BookCover } from "@/components/book-cover";
 import {
-  ConditionRadio,
+  ConditionChips,
   type BookCondition,
-} from "@/components/condition-radio";
+} from "@/components/condition-chips";
 import { updateBook, deleteBook } from "../../actions";
 
 export function EditBookForm({
@@ -84,7 +84,7 @@ export function EditBookForm({
         />
         <Field label="Author" value={author} onChange={setAuthor} />
 
-        <ConditionRadio value={condition} onChange={setCondition} />
+        <ConditionChips value={condition} onChange={setCondition} />
 
         <div className="flex items-center gap-3">
           <button

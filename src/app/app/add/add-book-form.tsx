@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { BookCover } from "@/components/book-cover";
-import { ConditionRadio } from "@/components/condition-radio";
+import { ConditionChips } from "@/components/condition-chips";
 import { addBook, type AddBookInput } from "./actions";
 
 type SearchResult = {
@@ -27,16 +27,16 @@ export function AddBookForm() {
 
   const [condition, setCondition] = useState<"good" | "worn">("good");
 
-  const [isSaving, startTransition] = useTransition();
+  const [isSaving, startSaving] = useTransition();
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  // Debounced search against our proxy. Frozen when user has picked a result
-  // or switched to manual entry — both downstream modes have their own UI.
+  // Debounced search; frozen while in manual mode.
   const abortRef = useRef<AbortController | null>(null);
   useEffect(() => {
-    if (selected || isManual) return;
+    if (isManual) return;
     if (query.trim().length < 2) {
       setResults([]);
+      setSelected(null);
       setStatus("idle");
       return;
     }
@@ -55,6 +55,15 @@ export function AddBookForm() {
         if (!res.ok) throw new Error("Search failed.");
         const data = (await res.json()) as SearchResult[];
         setResults(data);
+        // Clear selection if the newly-selected item isn't in the fresh list.
+        setSelected((sel) =>
+          sel &&
+          data.some(
+            (r) => r.title === sel.title && r.author === sel.author,
+          )
+            ? sel
+            : null,
+        );
         setStatus("idle");
         setSearchError(null);
       } catch (err) {
@@ -65,7 +74,7 @@ export function AddBookForm() {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [query, selected, isManual]);
+  }, [query, isManual]);
 
   function switchToManual() {
     setManualTitle(query.trim());
@@ -77,22 +86,21 @@ export function AddBookForm() {
 
   function switchToSearch() {
     setIsManual(false);
-    setSelected(null);
     setSaveError(null);
   }
 
   function save(payload: AddBookInput) {
-    startTransition(async () => {
+    setSaveError(null);
+    startSaving(async () => {
       try {
         await addBook(payload);
-        // addBook() calls redirect("/app") on success — control doesn't return.
       } catch (err) {
         setSaveError((err as Error).message);
       }
     });
   }
 
-  function handleSubmitSelected(e: React.FormEvent) {
+  function handleSubmitSearch(e: React.FormEvent) {
     e.preventDefault();
     if (!selected) return;
     save({
@@ -115,13 +123,16 @@ export function AddBookForm() {
     });
   }
 
+  // ------------------------------------------------------------------
+  // Manual entry view
+  // ------------------------------------------------------------------
   if (isManual) {
     return (
       <form onSubmit={handleSubmitManual} className="mt-6 space-y-6">
         <button
           type="button"
           onClick={switchToSearch}
-          className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
+          className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted hover:text-ink"
         >
           ← Back to search
         </button>
@@ -143,138 +154,179 @@ export function AddBookForm() {
           />
         </div>
 
-        <ConditionRadio value={condition} onChange={setCondition} />
+        <ConditionChips value={condition} onChange={setCondition} />
 
-        <div className="flex items-center gap-3">
+        <div className="space-y-3 pt-2">
           <button
             type="submit"
             disabled={isSaving || !manualTitle.trim()}
-            className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper disabled:opacity-50 dark:bg-paper dark:text-ink"
+            className="w-full rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper disabled:opacity-50"
           >
-            {isSaving ? "Adding…" : "Add to library"}
+            {isSaving ? "Adding…" : "Add to my library"}
           </button>
-          <Link
-            href="/app"
-            className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
-          >
-            Cancel
-          </Link>
           {saveError && (
-            <span className="text-sm text-red-600">{saveError}</span>
+            <p className="text-center text-sm text-red-600">{saveError}</p>
           )}
-        </div>
-      </form>
-    );
-  }
-
-  if (selected) {
-    return (
-      <form onSubmit={handleSubmitSelected} className="mt-6 space-y-6">
-        <div className="flex items-start gap-4 rounded-md border border-subtle bg-paper p-4 dark:border-neutral-800">
-          <BookCover
-            cover_url={selected.cover_url}
-            alt={selected.title}
-            size="lg"
-          />
-          <div className="min-w-0 flex-1 space-y-1">
-            <p className="font-medium">{selected.title}</p>
-            {selected.author && (
-              <p className="text-sm text-muted">{selected.author}</p>
-            )}
-            <button
-              type="button"
-              onClick={() => setSelected(null)}
-              className="text-xs text-muted underline hover:text-ink dark:hover:text-neutral-100"
+          <div className="text-center">
+            <Link
+              href="/app"
+              className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted hover:text-ink"
             >
-              Pick a different result
-            </button>
+              Cancel
+            </Link>
           </div>
         </div>
-
-        <ConditionRadio value={condition} onChange={setCondition} />
-
-        <div className="flex items-center gap-3">
-          <button
-            type="submit"
-            disabled={isSaving}
-            className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper disabled:opacity-50 dark:bg-paper dark:text-ink"
-          >
-            {isSaving ? "Adding…" : "Add to library"}
-          </button>
-          <Link
-            href="/app"
-            className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
-          >
-            Cancel
-          </Link>
-          {saveError && (
-            <span className="text-sm text-red-600">{saveError}</span>
-          )}
-        </div>
       </form>
     );
   }
 
+  // ------------------------------------------------------------------
+  // Search view
+  // ------------------------------------------------------------------
+  const trimmed = query.trim();
   const noMatches =
-    status === "idle" && query.trim().length >= 2 && results.length === 0;
+    status === "idle" && trimmed.length >= 2 && results.length === 0;
 
   return (
-    <div className="mt-6 space-y-4">
-      <input
-        type="search"
-        autoFocus
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search by title or author…"
-        className="w-full rounded-md border border-subtle px-3 py-2 text-sm outline-none focus:border-ink dark:border-neutral-700 dark:bg-ink"
-      />
+    <form onSubmit={handleSubmitSearch} className="mt-6 space-y-4">
+      <SearchField value={query} onChange={setQuery} autoFocus />
 
       {status === "searching" && (
-        <p className="text-sm text-muted">Searching…</p>
+        <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
+          Searching…
+        </p>
       )}
       {status === "error" && searchError && (
         <p className="text-sm text-red-600">{searchError}</p>
       )}
+
+      {results.length > 0 && (
+        <>
+          <p className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
+            {results.length}{" "}
+            {results.length === 1 ? "match" : "matches"}
+          </p>
+          <ul className="overflow-hidden rounded-md bg-paper">
+            {results.map((r, i) => {
+              const isSelected =
+                selected?.title === r.title &&
+                selected?.author === r.author;
+              return (
+                <li key={`${r.title}-${i}`}>
+                  <button
+                    type="button"
+                    onClick={() => setSelected(r)}
+                    aria-pressed={isSelected}
+                    className={`flex w-full items-start gap-3 px-3 py-3 text-left transition ${
+                      isSelected
+                        ? "bg-cream-dim"
+                        : "border-b border-divider last:border-b-0 hover:bg-cream-dim/50"
+                    }`}
+                  >
+                    <BookCover
+                      cover_url={r.cover_url}
+                      alt={r.title}
+                      size="sm"
+                    />
+                    <div className="min-w-0 flex-1 space-y-0.5">
+                      <p className="line-clamp-2 font-serif text-sm font-medium leading-tight">
+                        {r.title}
+                      </p>
+                      {r.author && (
+                        <p className="line-clamp-1 text-xs text-muted">
+                          {r.author}
+                        </p>
+                      )}
+                    </div>
+                    <RadioDot checked={isSelected} />
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+
       {noMatches && (
         <p className="text-sm text-muted">
-          No matches for “{query.trim()}”.
+          No matches for &ldquo;{trimmed}&rdquo;.
         </p>
       )}
 
-      <ul className="space-y-2">
-        {results.map((r, i) => (
-          <li key={`${r.title}-${i}`}>
-            <button
-              type="button"
-              onClick={() => setSelected(r)}
-              className="flex w-full items-start gap-3 rounded-md border border-subtle bg-paper p-3 text-left hover:border-ink dark:border-neutral-800 dark:hover:border-neutral-600"
-            >
-              <BookCover cover_url={r.cover_url} alt={r.title} size="sm" />
-              <div className="min-w-0 flex-1">
-                <p className="line-clamp-2 text-sm font-medium">{r.title}</p>
-                {r.author && (
-                  <p className="line-clamp-1 text-xs text-muted">
-                    {r.author}
-                  </p>
-                )}
-              </div>
-            </button>
-          </li>
-        ))}
-      </ul>
-
-      <div className="border-t border-subtle pt-4 dark:border-neutral-800">
-        <button
-          type="button"
-          onClick={switchToManual}
-          className="text-sm text-muted underline hover:text-ink dark:text-muted dark:hover:text-neutral-100"
-        >
-          {query.trim()
-            ? `Can't find it? Add “${query.trim()}” manually →`
-            : "Add manually →"}
-        </button>
+      <div className="pt-2">
+        <ConditionChips value={condition} onChange={setCondition} />
       </div>
+
+      <div className="space-y-3 pt-2">
+        <button
+          type="submit"
+          disabled={!selected || isSaving}
+          className="w-full rounded-md bg-ink px-4 py-3 text-sm font-medium text-paper disabled:opacity-50"
+        >
+          {isSaving ? "Adding…" : "Add to my library"}
+        </button>
+
+        {saveError && (
+          <p className="text-center text-sm text-red-600">{saveError}</p>
+        )}
+
+        <div className="text-center">
+          <button
+            type="button"
+            onClick={switchToManual}
+            className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted hover:text-ink"
+          >
+            Or enter manually
+          </button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
+// ------------------------------------------------------------------
+// Pieces
+// ------------------------------------------------------------------
+
+function SearchField({
+  value,
+  onChange,
+  autoFocus,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  autoFocus?: boolean;
+}) {
+  return (
+    <div className="relative">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-base text-muted"
+      >
+        ⌕
+      </span>
+      <input
+        type="search"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Search by title or author…"
+        autoFocus={autoFocus}
+        className="w-full rounded-md border border-subtle bg-paper py-2 pl-9 pr-3 text-sm outline-none focus:border-ink"
+      />
     </div>
+  );
+}
+
+function RadioDot({ checked }: { checked: boolean }) {
+  return (
+    <span
+      aria-hidden
+      className={`mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${
+        checked ? "border-ink" : "border-subtle"
+      }`}
+    >
+      {checked && <span className="h-2 w-2 rounded-full bg-ink" />}
+    </span>
   );
 }
 
@@ -295,7 +347,7 @@ function Field({
 }) {
   return (
     <label className="block space-y-1">
-      <span className="text-sm font-medium">
+      <span className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
         {label}
         {required && <span className="text-red-500"> *</span>}
       </span>
@@ -306,9 +358,8 @@ function Field({
         placeholder={placeholder}
         required={required}
         autoFocus={autoFocus}
-        className="w-full rounded-md border border-subtle px-3 py-2 text-sm outline-none focus:border-ink dark:border-neutral-700 dark:bg-ink"
+        className="w-full rounded-md border border-subtle bg-paper px-3 py-2 text-sm outline-none focus:border-ink"
       />
     </label>
   );
 }
-
