@@ -6,9 +6,11 @@ import type { SwapStatus } from "@/components/status-pill";
 
 type Action = "accept" | "decline" | "cancel" | "complete";
 
+// Client-side fallbacks by error code. The server's `message` field is
+// preferred when specific (e.g., "This swap is cancelled — can't accept.");
+// these entries only apply when no per-instance message came back.
 const ERROR_COPY: Record<string, string> = {
   forbidden: "You can't perform this action on this swap.",
-  state_changed: "This swap has already been updated. Refresh the page.",
   invalid_action: "Unknown action.",
   not_found: "Swap not found.",
   unauthorized: "Sign in first.",
@@ -48,12 +50,22 @@ export function SwapActions({
           error?: string;
           message?: string;
         };
+        // Prefer the server's specific message (e.g. "This swap is
+        // cancelled — can't accept."). Fall back to a code-based copy.
         setError(
-          ERROR_COPY[body.error ?? ""] ??
-            body.message ??
+          body.message ??
+            ERROR_COPY[body.error ?? ""] ??
             "Something went wrong.",
         );
         setPendingAction(null);
+
+        // Auto-recover on contested transitions: re-run the server
+        // component so pill, copy, and actions reflect the actual current
+        // status. Without this, the user sees stale "Accept" buttons on
+        // an already-cancelled swap and has to manually refresh.
+        if (body.error === "state_changed") {
+          router.refresh();
+        }
         return;
       }
 
