@@ -24,20 +24,17 @@ export default async function DiscoverPage() {
     .limit(PAGE_SIZE);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6 pb-24 md:pb-6">
-      <div className="flex items-center justify-between">
-        <Link
-          href="/app"
-          className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
-        >
-          ← Library
-        </Link>
-      </div>
+    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6 pb-24 md:max-w-lg md:pb-6">
+      <Link
+        href="/app"
+        className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted hover:text-ink md:hidden"
+      >
+        ← Library
+      </Link>
 
-      <h1 className="mt-6 font-serif text-2xl font-medium tracking-tight">Discover</h1>
-      <p className="mt-1 text-sm text-muted">
-        Books other people have put up for swap.
-      </p>
+      <h1 className="mt-4 font-serif text-2xl font-medium tracking-tight md:mt-0">
+        Discover
+      </h1>
 
       <DiscoverFeed initial={initial ?? []} currentUserId={user.id} />
     </main>

@@ -120,25 +120,30 @@ export function DiscoverFeed({
   }
 
   const trimmed = query.trim();
-  const noMatches =
-    items.length === 0 && !isSearching && trimmed.length >= 2;
-  const emptyFeed =
-    items.length === 0 && !isSearching && trimmed.length < 2;
+  const isSearch = trimmed.length >= 2;
+  const noMatches = items.length === 0 && !isSearching && isSearch;
+  const emptyFeed = items.length === 0 && !isSearching && !isSearch;
+
+  // "N available" when browsing, "N match(es)" when searching.
+  const counterLabel =
+    items.length === 1
+      ? isSearch
+        ? "1 match"
+        : "1 available"
+      : isSearch
+        ? `${items.length} matches`
+        : `${items.length} available`;
 
   return (
     <>
       <div className="mt-6">
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => onQueryChange(e.target.value)}
-          placeholder="Search title or author…"
-          className="w-full rounded-md border border-subtle px-3 py-2 text-sm outline-none focus:border-ink dark:border-neutral-700 dark:bg-ink"
-        />
+        <SearchField value={query} onChange={onQueryChange} />
       </div>
 
-      {isSearching && (
-        <p className="mt-4 text-sm text-muted">Searching…</p>
+      {!emptyFeed && !noMatches && (
+        <p className="mt-4 font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
+          {isSearching ? "Searching…" : counterLabel}
+        </p>
       )}
 
       {emptyFeed && (
@@ -160,36 +165,38 @@ export function DiscoverFeed({
       )}
 
       {items.length > 0 && (
-        <ul className="mt-6 space-y-2">
+        <ul className="mt-3 overflow-hidden rounded-md bg-paper">
           {items.map((book) => (
-            <li key={book.id}>
+            <li
+              key={book.id}
+              className="relative flex items-start gap-3 border-b border-divider px-4 py-3 last:border-b-0"
+            >
               <Link
                 href={`/app/discover/books/${book.id}`}
-                className="flex items-start gap-3 rounded-md border border-subtle bg-paper p-3 hover:border-ink dark:border-neutral-800 dark:hover:border-neutral-600"
-              >
+                aria-label={book.title}
+                className="absolute inset-0"
+              />
+              <div className="relative z-10">
                 <BookCover
                   cover_url={book.cover_url}
                   alt={book.title}
-                  size="md"
+                  size="sm"
                 />
-                <div className="min-w-0 flex-1 space-y-1">
-                  <p className="line-clamp-2 text-sm font-medium">
-                    {book.title}
+              </div>
+              <div className="relative z-10 min-w-0 flex-1 space-y-0.5">
+                <p className="line-clamp-2 font-serif text-sm font-medium leading-tight">
+                  {book.title}
+                </p>
+                {book.author && (
+                  <p className="line-clamp-1 text-xs text-muted">
+                    {book.author}
                   </p>
-                  {book.author && (
-                    <p className="line-clamp-1 text-xs text-muted">
-                      {book.author}
-                    </p>
-                  )}
-                  <p className="text-xs text-muted">
-                    From{" "}
-                    <span className="font-medium">
-                      {book.owner_first_name ?? "someone"}
-                    </span>{" "}
-                    · {book.condition === "good" ? "Good" : "Worn"}
-                  </p>
-                </div>
-              </Link>
+                )}
+                <p className="pt-0.5 font-mono text-[10px] text-muted">
+                  {book.owner_first_name ?? "someone"} ·{" "}
+                  {book.condition === "good" ? "Good" : "Worn"}
+                </p>
+              </div>
             </li>
           ))}
         </ul>
@@ -201,7 +208,7 @@ export function DiscoverFeed({
             type="button"
             onClick={loadMore}
             disabled={isLoadingMore}
-            className="rounded-md border border-subtle px-4 py-2 text-sm font-medium hover:bg-cream-dim disabled:opacity-50 dark:border-neutral-700 dark:hover:bg-ink"
+            className="rounded-md border border-subtle bg-paper px-4 py-2 text-sm font-medium hover:bg-cream-dim disabled:opacity-50"
           >
             {isLoadingMore ? "Loading…" : "Load more"}
           </button>
@@ -212,5 +219,31 @@ export function DiscoverFeed({
         <p className="mt-3 text-center text-sm text-red-600">{error}</p>
       )}
     </>
+  );
+}
+
+function SearchField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <div className="relative">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-base text-muted"
+      >
+        ⌕
+      </span>
+      <input
+        type="search"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Search title or author…"
+        className="w-full rounded-md border border-subtle bg-paper py-2 pl-9 pr-3 text-sm outline-none focus:border-ink"
+      />
+    </div>
   );
 }
