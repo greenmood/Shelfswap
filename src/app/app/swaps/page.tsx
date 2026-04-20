@@ -42,17 +42,17 @@ export default async function SwapsPage() {
   ]);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-md flex-col md:max-w-lg p-6 pb-24 md:pb-6">
-      <div className="flex items-center justify-between">
-        <Link
-          href="/app"
-          className="text-sm text-muted hover:text-ink dark:hover:text-neutral-100"
-        >
-          ← Library
-        </Link>
-      </div>
+    <main className="mx-auto flex min-h-screen max-w-md flex-col p-6 pb-24 md:max-w-lg md:pb-6">
+      <Link
+        href="/app"
+        className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted hover:text-ink"
+      >
+        ← Library
+      </Link>
 
-      <h1 className="mt-6 font-serif text-2xl font-medium tracking-tight">My Swaps</h1>
+      <h1 className="mt-4 font-serif text-2xl font-medium tracking-tight">
+        Swaps
+      </h1>
 
       <SwapsTabs
         incoming={(incoming ?? []) as unknown as SwapRow[]}
