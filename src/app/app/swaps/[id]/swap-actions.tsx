@@ -108,6 +108,13 @@ export function SwapActions({
           <p className="text-center font-mono text-[10px] tracking-widest text-muted">
             Mark complete after you&rsquo;ve handed the books over.
           </p>
+          <DangerButton
+            onClick={() => fire("cancel")}
+            busy={busy}
+            loading={pendingAction === "cancel"}
+            label="Cancel swap"
+            loadingLabel="Cancelling…"
+          />
         </>
       )}
 

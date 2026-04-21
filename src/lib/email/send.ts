@@ -74,6 +74,10 @@ export type SwapStatusEmailKind = "accepted" | "declined" | "cancelled";
 type SwapStatusEmail = {
   to: string;
   status: SwapStatusEmailKind;
+  // Only read for "cancelled" — distinguishes "cancelled their request"
+  // (fromStatus: "pending") from "cancelled the accepted swap"
+  // (fromStatus: "accepted"). Optional for back-compat of accepted/declined.
+  fromStatus?: "pending" | "accepted";
   recipientFirstName: string | null;
   actorFirstName: string | null;
   requestedTitle: string;
@@ -115,6 +119,19 @@ ${params.swapUrl}
       return { subject, text, html };
     }
     case "cancelled": {
+      if (params.fromStatus === "accepted") {
+        const subject = `${actor} cancelled the swap`;
+        const text = `${hello}
+
+${actor} cancelled the accepted swap — your "${params.offeredTitle}" for their "${params.requestedTitle}". Both books are back as they were.
+${params.swapUrl}
+`;
+        const html = `<p>${escapeHtml(hello)}</p>
+<p><strong>${escapeHtml(actor)}</strong> cancelled the accepted swap — your &ldquo;${escapeHtml(params.offeredTitle)}&rdquo; for their &ldquo;${escapeHtml(params.requestedTitle)}&rdquo;.</p>
+<p>Both books are back as they were. <a href="${params.swapUrl}">View on Shelfswap</a>.</p>
+<p style="color:#888;font-size:12px;margin-top:24px">Shelfswap</p>`;
+        return { subject, text, html };
+      }
       const subject = `${actor} cancelled their swap request`;
       const text = `${hello}
 

@@ -19,11 +19,15 @@ type NewStatus = "accepted" | "declined" | "cancelled" | "completed";
 
 const TRANSITIONS: Record<
   Action,
-  { actor: ActorKind; from: FromStatus; newStatus: NewStatus }
+  { actor: ActorKind; from: FromStatus | FromStatus[]; newStatus: NewStatus }
 > = {
   accept: { actor: "owner", from: "pending", newStatus: "accepted" },
   decline: { actor: "owner", from: "pending", newStatus: "declined" },
-  cancel: { actor: "requester", from: "pending", newStatus: "cancelled" },
+  cancel: {
+    actor: "either",
+    from: ["pending", "accepted"],
+    newStatus: "cancelled",
+  },
   complete: { actor: "either", from: "accepted", newStatus: "completed" },
 };
 
@@ -94,13 +98,17 @@ export async function PATCH(
   }
 
   // --- Current-state guard -------------------------------------------
-  if (swap.status !== spec.from) {
+  const allowedFrom = Array.isArray(spec.from) ? spec.from : [spec.from];
+  if (!allowedFrom.includes(swap.status as FromStatus)) {
     return err(
       "state_changed",
       `This swap is ${swap.status} — can't ${action}.`,
       409,
     );
   }
+  // Remember the pre-transition status so the notifier can tailor copy
+  // (e.g. cancelled-from-accepted vs cancelled-from-pending).
+  const fromStatus = swap.status as FromStatus;
 
   // --- Apply the transition ------------------------------------------
   const admin = createAdminClient();
@@ -134,7 +142,7 @@ export async function PATCH(
       .from("swap_requests")
       .update({ status: spec.newStatus })
       .eq("id", id)
-      .eq("status", spec.from)
+      .in("status", allowedFrom)
       .select("id, status");
 
     if (updateErr) {
@@ -161,7 +169,9 @@ export async function PATCH(
     await notifyOtherParty({
       admin,
       swap,
+      actorUserId: user.id,
       newStatus: resultStatus as SwapStatusEmailKind,
+      fromStatus,
       appOrigin: new URL(request.url).origin,
     });
   }
@@ -172,17 +182,17 @@ export async function PATCH(
 async function notifyOtherParty(args: {
   admin: ReturnType<typeof createAdminClient>;
   swap: { id: string; requester_id: string; owner_id: string };
+  actorUserId: string;
   newStatus: SwapStatusEmailKind;
+  fromStatus: FromStatus;
   appOrigin: string;
 }) {
-  const { admin, swap, newStatus, appOrigin } = args;
+  const { admin, swap, actorUserId, newStatus, fromStatus, appOrigin } = args;
 
-  // accepted/declined → owner did it, recipient is the requester.
-  // cancelled       → requester did it, recipient is the owner.
+  // Derive from the authenticated actor — cancel can now be either side.
+  const actorId = actorUserId;
   const recipientId =
-    newStatus === "cancelled" ? swap.owner_id : swap.requester_id;
-  const actorId =
-    newStatus === "cancelled" ? swap.requester_id : swap.owner_id;
+    actorUserId === swap.owner_id ? swap.requester_id : swap.owner_id;
 
   let emailOk = false;
   try {
@@ -220,6 +230,7 @@ async function notifyOtherParty(args: {
       await sendSwapStatusEmail({
         to: recipientEmail,
         status: newStatus,
+        fromStatus,
         recipientFirstName: recipientProfile.data?.first_name ?? null,
         actorFirstName: actorProfile.data?.first_name ?? null,
         requestedTitle,
