@@ -128,9 +128,57 @@ If all three: you made a thing. Decide what's next based on real usage, not spec
 
 ## Explicitly not in v0 — resist each one
 
-Borrow flow · in-app chat · ratings · counter-proposals · multi-book swaps · push notifications · native apps · wishlists · recommendations · maps · shipping · city filtering · moderation tooling · analytics beyond Vercel's built-ins.
+Borrow flow · in-app chat · ratings · counter-proposals · multi-book swaps · push notifications · native apps · recommendations · maps · shipping · city filtering · moderation tooling · analytics beyond Vercel's built-ins.
+
+(Hearts / wishlist moved to v0.1 — see Week 6.)
 
 All reasonable eventually. None is the thing blocking your first real swap.
+
+---
+
+## Week 6 — Hearts & Matching (v0.1)
+
+**Goal:** friction on the Propose screen drops to near-zero. The proposer no longer guesses what to offer — the app ranks it by what the owner has actually signaled interest in.
+
+### Data model delta
+
+New table `book_wishes`:
+- `user_id` — fk to `users`
+- `book_id` — fk to `books`
+- `created_at` — timestamp
+- Unique constraint on `(user_id, book_id)`
+
+New view `book_wish_counts` — aggregate count per book. Join onto the existing `discoverable_books` view so each Discover row carries a `wish_count`.
+
+RLS:
+- A user can insert/delete their own wishes.
+- Aggregate counts are readable by anyone.
+- The `user_id → book_id` mapping is **not** readable by anyone except the owner of the wish. Owner of a book sees the count, not who. Identity is revealed only through a proposed swap (same gating as handle reveal).
+
+### Checklist
+
+- [ ] `book_wishes` table + RLS policies
+- [ ] `book_wish_counts` view, joined onto `discoverable_books`
+- [ ] `POST /api/wishes` and `DELETE /api/wishes/:bookId` — optimistic toggle
+- [ ] Heart button on Discover rows
+- [ ] Heart button on book detail + aggregate "N people want this"
+- [ ] Heart button on owner-profile book rows
+- [ ] `/app/wishes` screen — list of hearted books with a propose shortcut when the owner has something swappable
+- [ ] `GET /api/propose-suggestions/:requestedBookId` — returns three ranked arrays of the requester's available books: `wanted[]` (exact-book hearts), `likely[]` (title or author hearts elsewhere), `other[]`
+- [ ] Propose screen sectioned layout consuming the suggestions API; preselect the first `wanted` row; collapse `other` by default
+- [ ] "You wished for this" badge on incoming swap detail (shown on the offered book, owner side)
+- [ ] Match banner on Library: "X has N books you've hearted and wants M of yours → Propose"
+
+### Out of scope for Week 6
+
+- Email or push alerts for new-listing matches (real backlog item, but defer)
+- Genre / tag / keyword wants
+- Heart decay prompts
+- Collaborative filtering ("users like you also wanted")
+
+### Ship criterion
+
+One real swap proposed from the "They want these" or "Likely matches" section. If four weeks pass with no heart-driven swap, kill the feature and revisit.
 
 ---
 
@@ -143,7 +191,7 @@ Rough rules for what deserves build time later:
 - **"I'd lend but not give away" →** borrow flow
 - **"I don't want to share my WhatsApp" →** in-app messaging (you'll regret this; build it only when repeatedly asked)
 - **"Is this person trustworthy?" →** ratings
-- **"Tell me when someone nearby lists X" →** wishlist + email alerts
+- **"Tell me when someone lists X" →** email alerts on top of v0.1 hearts
 - **"I want to use this in [other city]" →** add a `city` field and per-city filter; the moment a second cluster emerges organically, lean in
 
 If nobody asks for any of these — that's also a signal. Maybe v0 is the right shape of product and what it needs is more users, not more features.

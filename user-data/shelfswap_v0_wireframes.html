@@ -222,7 +222,7 @@
   /* ---------- Tab bar ---------- */
   .tab-bar {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     border-top: 1px solid var(--divider);
     padding: 8px 0 12px;
     flex-shrink: 0;
@@ -662,6 +662,131 @@
 
   .handoff-stack > * + * { margin-top: 10px; }
 
+  /* ---------- Hearts & matching (v0.1) ---------- */
+  .heart {
+    width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+  .heart svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+  .heart.on { color: var(--accent); }
+  .heart.on svg { fill: currentColor; stroke: currentColor; }
+
+  .wish-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-top: 4px;
+  }
+  .wish-badge.soft { color: var(--muted); }
+
+  .wish-count {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 14px;
+  }
+  .wish-count .hh { color: var(--accent); }
+
+  .propose-section { margin-top: 14px; }
+  .propose-section:first-of-type { margin-top: 4px; }
+  .propose-section-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 2px;
+    padding-bottom: 2px;
+  }
+  .propose-section-head strong { color: var(--ink); font-weight: 600; letter-spacing: 0.08em; }
+  .propose-section.collapsed .radio-row { display: none; }
+  .caret { font-size: 10px; }
+
+  .match-banner {
+    padding: 11px 12px;
+    background: var(--accent-soft);
+    border-left: 2px solid var(--accent);
+    border-radius: 6px;
+    margin: 4px 0 10px;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .match-banner strong { font-weight: 600; }
+  .match-banner .cta {
+    display: block;
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .gear {
+    margin-left: auto;
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted);
+  }
+  .gear svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; }
+
+  .handle-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--paper);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .handle-row + .handle-row { margin-top: 8px; }
+  .handle-icon {
+    width: 22px; height: 22px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--muted);
+    background: var(--cream);
+    border-radius: 5px;
+  }
+  .handle-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 1px;
+  }
+  .handle-value {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--ink);
+  }
+  .handle-body { flex: 1; min-width: 0; }
+  .handle-open {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
   /* ---------- Footer ---------- */
   .page-footer {
     max-width: 1240px;
@@ -686,9 +811,9 @@
 <body>
 
 <header class="page-header">
-  <div class="kicker">Shelfswap · v0 · wireframes</div>
+  <div class="kicker">Shelfswap · v0 + v0.1 · wireframes</div>
   <h1>Core screens,<br><em>low fidelity.</em></h1>
-  <p>Seven screens covering the whole loop — build a library, find a book, propose a swap, agree a handoff, close it out. Real copy, deliberately unpolished visuals. The goal is to argue about structure, not colors.</p>
+  <p>Eight screens covering the whole loop — build a library, find a book, <em>signal interest</em>, propose a swap with match hints, agree a handoff, close it out. v0.1 adds hearts and reciprocal matching on the Propose screen. Real copy, deliberately unpolished visuals. Argue about structure, not colors.</p>
   <div class="flow-strip">
     <span>01 Library</span><span class="sep">→</span>
     <span>02 Add book</span><span class="sep">→</span>
@@ -696,7 +821,8 @@
     <span>04 Book detail</span><span class="sep">→</span>
     <span>05 Propose swap</span><span class="sep">→</span>
     <span>06 My swaps</span><span class="sep">→</span>
-    <span>07 Accepted / reveal</span>
+    <span>07 Accepted / reveal</span><span class="sep">→</span>
+    <span>08 My wishes</span>
   </div>
 </header>
 
@@ -712,9 +838,14 @@
       <div class="status-bar"><span>9:41</span><span class="dots">● ● ●</span></div>
       <div class="top-nav">
         <span class="title">My library</span>
-        <span class="count">12 books</span>
+        <span class="gear" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
       </div>
       <div class="content">
+        <div class="match-banner">
+          <strong>Anna</strong> has <strong>2 books</strong> you've hearted, and wants <strong>1</strong> of yours.
+          <span class="cta">Propose a swap →</span>
+        </div>
+
         <div class="lib-stats">
           <div class="lib-stat"><div class="num">12</div><div class="lbl">Owned</div></div>
           <div class="lib-stat"><div class="num">8</div><div class="lbl">Available</div></div>
@@ -776,13 +907,9 @@
           <div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>
           Swaps
         </div>
-        <div class="tab">
-          <div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>
-          Me
-        </div>
       </div>
     </div>
-    <div class="note"><strong>Root tab.</strong> Tap a book to toggle availability or edit condition. FAB opens <em>Add Book</em>. Stats row is nice-to-have — drop if build time is tight.</div>
+    <div class="note"><strong>Root tab.</strong> Gear opens profile and handle settings. Match banner appears only when a two-sided heart match exists with another user — hide otherwise. Tap a book to toggle availability or edit condition. FAB opens <em>Add Book</em>.</div>
   </section>
 
   <!-- ============ 2. ADD BOOK ============ -->
@@ -846,7 +973,6 @@
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>Library</div>
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>Discover</div>
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>Swaps</div>
-        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
       </div>
     </div>
     <div class="note"><strong>Autocomplete via Open Library</strong> proxied through <code>/api/book-lookup</code>. Manual entry escape hatch for obscure titles, foreign editions, or zines.</div>
@@ -862,16 +988,13 @@
       <div class="status-bar"><span>9:41</span><span class="dots">● ● ●</span></div>
       <div class="top-nav">
         <span class="title">Discover</span>
-        <span class="count">02139</span>
+        <span class="count">58 books</span>
       </div>
       <div class="content">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:10px;">58 available near you</div>
-
         <div class="chips">
           <span class="chip active">All</span>
           <span class="chip">Fiction</span>
           <span class="chip">Non-fiction</span>
-          <span class="chip">Near me</span>
         </div>
 
         <div class="book-row">
@@ -879,42 +1002,45 @@
           <div class="book-meta">
             <div class="book-title">Sea of Tranquility</div>
             <div class="book-author">Emily St. John Mandel</div>
-            <div class="book-sub">Maya · 0.3 mi</div>
+            <div class="book-sub">Maya · Good</div>
           </div>
+          <div class="heart on" aria-label="Wished"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg></div>
         </div>
         <div class="book-row">
           <div class="cover sm v2"></div>
           <div class="book-meta">
             <div class="book-title">Tomorrow, and Tomorrow, and Tomorrow</div>
             <div class="book-author">Gabrielle Zevin</div>
-            <div class="book-sub">Jordan · 0.5 mi</div>
+            <div class="book-sub">Jordan · Good</div>
           </div>
+          <div class="heart" aria-label="Want this"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg></div>
         </div>
         <div class="book-row">
           <div class="cover sm v3"></div>
           <div class="book-meta">
             <div class="book-title">The Vegetarian</div>
             <div class="book-author">Han Kang</div>
-            <div class="book-sub">Priya · 0.8 mi</div>
+            <div class="book-sub">Priya · Worn</div>
           </div>
+          <div class="heart" aria-label="Want this"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg></div>
         </div>
         <div class="book-row">
           <div class="cover sm v4"></div>
           <div class="book-meta">
             <div class="book-title">Intermezzo</div>
             <div class="book-author">Sally Rooney</div>
-            <div class="book-sub">Alex · 1.1 mi</div>
+            <div class="book-sub">Alex · Good</div>
           </div>
+          <div class="heart on" aria-label="Wished"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg></div>
         </div>
       </div>
       <div class="tab-bar">
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>Library</div>
         <div class="tab active"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>Discover</div>
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>Swaps</div>
-        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
       </div>
     </div>
-    <div class="note"><strong>Filter = <code>is_available = true</code> + not me.</strong> No location filter in v0 — product targets Ukraine, where zip codes aren't a meaningful signal. Add a <code>city</code> field if a second-city cluster emerges.</div>
+    <div class="note"><strong>Heart = one-tap wishlist.</strong> Optimistic toggle, private to the user; owners see aggregate counts only. Filter = <code>is_available = true</code> + not me. No location filter — product targets Ukraine, where zip codes aren't meaningful. Add a <code>city</code> field only if a second-city cluster emerges.</div>
   </section>
 
   <!-- ============ 4. BOOK DETAIL ============ -->
@@ -928,6 +1054,7 @@
       <div class="top-nav">
         <span class="back">←</span>
         <span class="title">Book</span>
+        <div class="heart on" aria-label="Wished"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg></div>
       </div>
       <div class="content">
         <div class="detail-hero">
@@ -938,13 +1065,14 @@
             <span class="pill">Fiction</span>
             <span class="pill accent">Good condition</span>
           </div>
+          <div class="wish-count"><span class="hh">♥</span> 5 people want this</div>
         </div>
 
         <div class="owner-card">
           <div class="avatar"></div>
           <div>
             <div class="owner-name">Offered by Maya</div>
-            <div class="owner-sub">02139 · 0.3 mi away</div>
+            <div class="owner-sub">Telegram · Instagram</div>
           </div>
         </div>
 
@@ -956,10 +1084,9 @@
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>Library</div>
         <div class="tab active"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>Discover</div>
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>Swaps</div>
-        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
       </div>
     </div>
-    <div class="note"><strong>One CTA only.</strong> No wishlist, no ratings, no save-for-later. Owner info is first name only — no location in v0.</div>
+    <div class="note"><strong>Heart in top-right</strong> is the save-for-later — no dedicated CTA needed. Aggregate count is public; the identities behind it stay private until someone proposes a swap. Owner card shows first name + which handles they've shared (no values until accept).</div>
   </section>
 
   <!-- ============ 5. PROPOSE SWAP ============ -->
@@ -985,30 +1112,41 @@
           </div>
         </div>
 
-        <div class="section-label">Offer in return (pick one)</div>
+        <div class="propose-section">
+          <div class="propose-section-head"><strong>They want these</strong><span>1</span></div>
+          <div class="radio-row">
+            <div class="radio checked"></div>
+            <div class="cover xs"></div>
+            <div class="book-meta">
+              <div class="book-title">Klara and the Sun</div>
+              <div class="book-author">Kazuo Ishiguro</div>
+              <span class="wish-badge">♥ Maya wished for this</span>
+            </div>
+          </div>
+        </div>
 
-        <div class="radio-row">
-          <div class="radio checked"></div>
-          <div class="cover xs"></div>
-          <div class="book-meta">
-            <div class="book-title">Klara and the Sun</div>
-            <div class="book-author">Kazuo Ishiguro</div>
+        <div class="propose-section">
+          <div class="propose-section-head"><strong>Likely matches</strong><span>1</span></div>
+          <div class="radio-row">
+            <div class="radio"></div>
+            <div class="cover xs v2"></div>
+            <div class="book-meta">
+              <div class="book-title">Piranesi</div>
+              <div class="book-author">Susanna Clarke</div>
+              <span class="wish-badge soft">She likes Susanna Clarke</span>
+            </div>
           </div>
         </div>
-        <div class="radio-row">
-          <div class="radio"></div>
-          <div class="cover xs v2"></div>
-          <div class="book-meta">
-            <div class="book-title">Piranesi</div>
-            <div class="book-author">Susanna Clarke</div>
-          </div>
-        </div>
-        <div class="radio-row">
-          <div class="radio"></div>
-          <div class="cover xs v3"></div>
-          <div class="book-meta">
-            <div class="book-title">The Overstory</div>
-            <div class="book-author">Richard Powers</div>
+
+        <div class="propose-section collapsed">
+          <div class="propose-section-head"><strong>Your other books</strong><span>1 <span class="caret">▾</span></span></div>
+          <div class="radio-row">
+            <div class="radio"></div>
+            <div class="cover xs v3"></div>
+            <div class="book-meta">
+              <div class="book-title">The Overstory</div>
+              <div class="book-author">Richard Powers</div>
+            </div>
           </div>
         </div>
 
@@ -1020,10 +1158,9 @@
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>Library</div>
         <div class="tab active"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>Discover</div>
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>Swaps</div>
-        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
       </div>
     </div>
-    <div class="note"><strong>List = my available books only.</strong> Server re-validates ownership + availability on submit. Empty state here (no available books) should prompt user to list something first.</div>
+    <div class="note"><strong>Sectioned list</strong> from <code>/api/propose-suggestions/:bookId</code>. <em>They want these</em> = exact-book hearts (preselect first). <em>Likely matches</em> = hearts on same title/author elsewhere. <em>Other</em> collapsed by default. If all three are empty, show the flat list with a hint to browse the owner's library. Server re-validates ownership + availability on submit.</div>
   </section>
 
   <!-- ============ 6. MY SWAPS ============ -->
@@ -1101,7 +1238,6 @@
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>Library</div>
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>Discover</div>
         <div class="tab active"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>Swaps</div>
-        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
       </div>
     </div>
     <div class="note"><strong>Segmented control</strong> for incoming vs outgoing. Status badges: pending, accepted, completed, declined, cancelled. Tap any card to open its detail.</div>
@@ -1111,7 +1247,7 @@
   <section class="screen">
     <div class="screen-head">
       <span class="screen-num">07</span>
-      <span class="screen-title">Swap accepted — email reveal</span>
+      <span class="screen-title">Swap accepted — handle reveal</span>
     </div>
     <div class="phone">
       <div class="status-bar"><span>9:41</span><span class="dots">● ● ●</span></div>
@@ -1130,6 +1266,7 @@
             <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px;">You give</div>
             <div class="swap-book-title">Klara and the Sun</div>
             <div class="swap-book-author">Kazuo Ishiguro</div>
+            <span class="wish-badge">♥ Maya wished for this</span>
           </div>
           <div class="swap-arrow">⇄</div>
           <div class="swap-half">
@@ -1139,16 +1276,25 @@
           </div>
         </div>
 
-        <div class="contact-block">
-          <div class="contact-label">Contact Maya</div>
-          <div class="contact-name">Maya</div>
-          <div class="contact-email">
-            <span>maya.l@gmail.com</span>
-            <span class="copy-btn">Copy</span>
+        <div class="contact-label" style="margin-bottom:6px;">Contact Maya</div>
+        <div class="handle-row">
+          <div class="handle-icon">TG</div>
+          <div class="handle-body">
+            <div class="handle-label">Telegram</div>
+            <div class="handle-value">@maya_l</div>
           </div>
+          <span class="handle-open">Open ↗</span>
+        </div>
+        <div class="handle-row">
+          <div class="handle-icon">IG</div>
+          <div class="handle-body">
+            <div class="handle-label">Instagram</div>
+            <div class="handle-value">@maya.lukianenko</div>
+          </div>
+          <span class="handle-open">Open ↗</span>
         </div>
 
-        <div class="handoff-stack">
+        <div class="handoff-stack" style="margin-top:14px;">
           <button class="btn">Mark complete</button>
           <button class="btn ghost">Cancel swap</button>
         </div>
@@ -1157,10 +1303,80 @@
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>Library</div>
         <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>Discover</div>
         <div class="tab active"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>Swaps</div>
-        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg></div>Me</div>
       </div>
     </div>
-    <div class="note"><strong>The only screen where the counterparty's email is shown.</strong> Gated server-side by <code>/api/swaps/:id/counterparty</code>. Before accept → 404. Mark complete flips both books to unavailable.</div>
+    <div class="note"><strong>Only screen where counterparty handles are revealed.</strong> Gated server-side by <code>/api/swaps/:id/counterparty</code>; before accept → 404. Deep links open WhatsApp, Telegram, or Instagram directly. <em>Maya wished for this</em> badge reinforces why the match worked — visible to the owner on their offered-to-them book. Mark complete flips both books to unavailable.</div>
+  </section>
+
+  <!-- ============ 8. MY WISHES ============ -->
+  <section class="screen">
+    <div class="screen-head">
+      <span class="screen-num">08</span>
+      <span class="screen-title">My wishes (v0.1)</span>
+    </div>
+    <div class="phone">
+      <div class="status-bar"><span>9:41</span><span class="dots">● ● ●</span></div>
+      <div class="top-nav">
+        <span class="back">←</span>
+        <span class="title">My wishes</span>
+        <span class="count">4 books</span>
+      </div>
+      <div class="content">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin:4px 0 10px;">
+          Books you've hearted. Propose when the owner lists something.
+        </div>
+
+        <div class="book-row">
+          <div class="cover sm"></div>
+          <div class="book-meta">
+            <div class="book-title">Sea of Tranquility</div>
+            <div class="book-author">Emily St. John Mandel</div>
+            <div class="book-sub">Maya · Available</div>
+            <span class="wish-badge">Propose a swap →</span>
+          </div>
+          <div class="heart on"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg></div>
+        </div>
+
+        <div class="book-row">
+          <div class="cover sm v4"></div>
+          <div class="book-meta">
+            <div class="book-title">Intermezzo</div>
+            <div class="book-author">Sally Rooney</div>
+            <div class="book-sub">Alex · Available</div>
+            <span class="wish-badge">Propose a swap →</span>
+          </div>
+          <div class="heart on"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg></div>
+        </div>
+
+        <div class="book-row">
+          <div class="cover sm v3"></div>
+          <div class="book-meta">
+            <div class="book-title">The Vegetarian</div>
+            <div class="book-author">Han Kang</div>
+            <div class="book-sub">Priya · In swap</div>
+            <span class="wish-badge soft">Unavailable for now</span>
+          </div>
+          <div class="heart on"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg></div>
+        </div>
+
+        <div class="book-row">
+          <div class="cover sm v5"></div>
+          <div class="book-meta">
+            <div class="book-title">Trust</div>
+            <div class="book-author">Hernan Diaz</div>
+            <div class="book-sub">No one has listed this yet</div>
+            <span class="wish-badge soft">Waiting for a match</span>
+          </div>
+          <div class="heart on"><svg viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5 5 0 0 1 12 6a5 5 0 0 1 9.5 6C19 16.5 12 21 12 21z"/></svg></div>
+        </div>
+      </div>
+      <div class="tab-bar">
+        <div class="tab active"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 4h6v16H4zM14 4h6v16h-6z"/></svg></div>Library</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-3 7-3-7 6 0z"/></svg></div>Discover</div>
+        <div class="tab"><div class="tab-glyph"><svg viewBox="0 0 24 24"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></div>Swaps</div>
+      </div>
+    </div>
+    <div class="note"><strong>Entry point</strong> from the Library gear menu, or a "Wishes" link under the stats row. Rows with available owners jump straight into Propose. Rows for titles nobody has listed yet are kept around as latent interest — no notifications in v0.1; the match just surfaces when the user returns. (Email alerts are a v0.2 ask.)</div>
   </section>
 
 </main>

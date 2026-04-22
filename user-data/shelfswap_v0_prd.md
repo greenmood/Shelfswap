@@ -1,8 +1,8 @@
 # Shelfswap v0 — Pet Project PRD
 
 **Scope:** weekend-buildable, solo-operated, < 100 users
-**Status:** Draft
-**Last updated:** April 18, 2026
+**Status:** v0 shipping · v0.1 (matching) planned
+**Last updated:** April 22, 2026
 
 ---
 
@@ -33,7 +33,7 @@ A web app where I and a small cluster of friends can list books from our home sh
 - Barcode scanning
 - Maps or geocoding
 - Ratings, reviews, moderation pipeline
-- Wishlists, recommendations, book clubs
+- Recommendations, book clubs (see v0.1 for the lightweight wishlist / hearts cut)
 - Shipping, payments, deposits
 
 ---
@@ -61,6 +61,39 @@ If those hit, it's working. Decide what's next from there.
 
 ---
 
+## v0.1 — Matching (next)
+
+v0 works: friends list books, find each other's books, negotiate swaps. The live friction point is the Propose screen — the proposer has to guess which of their own books the owner actually wants. Matching removes the guesswork.
+
+### What's in
+
+1. **Hearts** — one-tap "Want this" on any book in Discover, the book detail screen, or another user's profile. That is the whole wishlist; no separate curation flow.
+2. **Reciprocal match on Propose** — the requester's available books are sectioned and ranked:
+   - **They want these** — books the owner hearted on your shelf (preselected)
+   - **Likely matches** — books whose title or author they've hearted elsewhere
+   - **Your other available books** — collapsed by default
+3. **Wished-for badge** on incoming swap detail — the owner sees "You wished for this" on the offered book, making accept a no-brainer.
+4. **My wishes** — a list of hearted books, each with a "Propose" shortcut when the owner has something swappable.
+5. **Match banner** on Library when a two-sided match exists: _"Anna has 2 books you've hearted, and she wants 1 of yours."_
+
+### Privacy model
+
+Hearts inherit v0's anonymity pattern. Owners see **aggregate** heart counts on their books ("3 people want this") — never names. Identity is revealed only when a hearter proposes an actual swap, same gating as handle reveal.
+
+### What's still out
+
+- Genre/tag wants (keyword-level wishlist) — revisit only if hearts don't catch
+- Collaborative-filtering recommendations
+- Wanting books nobody has listed yet
+- Email or push alerts for new-listing matches (defer — revisit for v0.2)
+- Heart decay / "still want this?" prompts
+
+### Success = one match-driven swap
+
+Add one checkpoint to v0's three: at least one swap proposed from the "They want these" or "Likely matches" section. If nobody uses hearts in four weeks, kill the feature.
+
+---
+
 ## Risks you just accept
 
 - **No moderation.** If someone misbehaves, you manually remove them. Fine at this scale.
@@ -71,6 +104,6 @@ If those hit, it's working. Decide what's next from there.
 
 ## Consciously deferred
 
-Borrow, native apps, chat, ratings, moderation, deposits, push, maps, recommendations, clubs, shipping, any second city.
+Borrow, native apps, chat, ratings, moderation, deposits, push, maps, collaborative recommendations, clubs, shipping, any second city.
 
 Add only when real usage demands it.
