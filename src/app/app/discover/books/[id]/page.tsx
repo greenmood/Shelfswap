@@ -78,7 +78,9 @@ export default async function DiscoverBookPage({
         </div>
         {wishCount > 0 && (
           <p className="mt-3 font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
-            <span className="text-accent">♥</span>{" "}
+            <span aria-hidden className="text-accent">
+              ♥
+            </span>{" "}
             {wishCount === 1
               ? "1 person wants this"
               : `${wishCount} people want this`}

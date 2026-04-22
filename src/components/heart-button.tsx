@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, type MouseEvent } from "react";
+import { useRef, useState, useTransition, type MouseEvent } from "react";
 
 export function HeartButton({
   bookId,
@@ -16,11 +16,18 @@ export function HeartButton({
   const [wished, setWished] = useState(initialWished);
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
+  // Synchronous in-flight gate. `disabled={isPending}` covers the common
+  // case, but the React state update is async — two clicks fired before the
+  // re-render can both slip through. A ref is authoritative right now.
+  const inFlight = useRef(false);
 
   function handleClick(e: MouseEvent<HTMLButtonElement>) {
     // Most hearts sit next to a <Link> for the row — keep the click local.
     e.preventDefault();
     e.stopPropagation();
+
+    if (inFlight.current) return;
+    inFlight.current = true;
 
     const next = !wished;
     setWished(next);
@@ -47,6 +54,8 @@ export function HeartButton({
         setWished(!next);
         onToggle?.(!next);
         setError((err as Error).message);
+      } finally {
+        inFlight.current = false;
       }
     });
   }

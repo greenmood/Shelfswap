@@ -81,6 +81,7 @@ export default async function AppHome() {
   // the ones I could actually propose for). Then ask: which of those owners
   // have hearted any of my available books? Pick the strongest mutual match.
   const topMatch = await computeTopMatch({
+    selfId: user.id,
     myWishes: myWishes ?? [],
     myAvailableBookIds: booksWithStatus
       .filter((b) => b.status === "available")
@@ -269,9 +270,11 @@ type MyWishRow = {
 };
 
 async function computeTopMatch({
+  selfId,
   myWishes,
   myAvailableBookIds,
 }: {
+  selfId: string;
   myWishes: MyWishRow[];
   myAvailableBookIds: string[];
 }): Promise<Match | null> {
@@ -283,6 +286,9 @@ async function computeTopMatch({
   >();
   for (const w of myWishes) {
     if (!w.is_available) continue;
+    // Self-hearts shouldn't exist (API blocks them), but if an older wish
+    // predates that block, don't let it produce a "you match yourself" banner.
+    if (w.owner_id === selfId) continue;
     const e = byOwner.get(w.owner_id) ?? {
       first_name: w.owner_first_name,
       they_have: 0,
