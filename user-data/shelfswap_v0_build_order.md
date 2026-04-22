@@ -157,9 +157,9 @@ RLS:
 
 ### Checklist
 
-- [ ] `book_wishes` table + RLS policies
-- [ ] `book_wish_counts` view, joined onto `discoverable_books`
-- [ ] `POST /api/wishes` and `DELETE /api/wishes/:bookId` — optimistic toggle
+- [x] `book_wishes` table + RLS policies
+- [x] `book_wish_counts` view, joined onto `discoverable_books`
+- [x] `POST /api/wishes` and `DELETE /api/wishes/:bookId` — optimistic toggle
 - [ ] Heart button on Discover rows
 - [ ] Heart button on book detail + aggregate "N people want this"
 - [ ] Heart button on owner-profile book rows
