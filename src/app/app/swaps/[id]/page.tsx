@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { getCurrentUser } from "@/lib/supabase/server";
+import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { StatusPill, type SwapStatus } from "@/components/status-pill";
 import { whatsappUrl, telegramUrl, instagramUrl } from "@/lib/handles";
@@ -78,6 +78,20 @@ export default async function SwapDetailPage({
   const giveBook = isOwner ? swap.requested : swap.offered;
   const getBook = isOwner ? swap.offered : swap.requested;
 
+  // "You wished for this" badge: only on the owner's incoming view, when
+  // the owner had previously hearted the offered book. Uses the user's own
+  // client so RLS on book_wishes scopes to auth.uid().
+  let ownerWishedOffered = false;
+  if (isOwner && swap.offered?.id) {
+    const userClient = await createClient();
+    const { data } = await userClient
+      .from("book_wishes")
+      .select("book_id")
+      .eq("book_id", swap.offered.id)
+      .maybeSingle();
+    ownerWishedOffered = data !== null;
+  }
+
   const canRevealHandles =
     swap.status === "accepted" || swap.status === "completed";
   const handles =
@@ -120,7 +134,7 @@ export default async function SwapDetailPage({
         <span aria-hidden className="shrink-0 font-mono text-sm text-muted">
           ⇄
         </span>
-        <SwapHalf label="You get" book={getBook} />
+        <SwapHalf label="You get" book={getBook} wished={ownerWishedOffered} />
       </section>
 
       {/* Contact block — accepted + completed only */}
@@ -210,9 +224,11 @@ function Banner({
 function SwapHalf({
   label,
   book,
+  wished = false,
 }: {
   label: string;
   book: BookRef | null;
+  wished?: boolean;
 }) {
   const title = book?.title ?? "Unknown book";
   return (
@@ -225,6 +241,11 @@ function SwapHalf({
       </p>
       {book?.author && (
         <p className="truncate text-[10.5px] text-muted">{book.author}</p>
+      )}
+      {wished && (
+        <p className="mt-1 font-mono text-[9px] font-medium uppercase tracking-widest text-accent">
+          <span aria-hidden>♥</span> You wished for this
+        </p>
       )}
     </div>
   );
