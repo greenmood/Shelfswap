@@ -83,6 +83,13 @@ export default async function AppHome() {
             Swaps
           </Link>
           <Link
+            href="/app/wishes"
+            aria-label="Wishes"
+            className="text-lg text-muted hover:text-ink"
+          >
+            ♡
+          </Link>
+          <Link
             href="/app/profile"
             aria-label="Profile"
             className="text-xl text-muted hover:text-ink"

@@ -163,7 +163,7 @@ RLS:
 - [x] Heart button on Discover rows
 - [x] Heart button on book detail + aggregate "N people want this"
 - [x] Heart button on owner-profile book rows
-- [ ] `/app/wishes` screen — list of hearted books with a propose shortcut when the owner has something swappable
+- [x] `/app/wishes` screen — list of hearted books with a propose shortcut when the owner has something swappable
 - [ ] `GET /api/propose-suggestions/:requestedBookId` — returns three ranked arrays of the requester's available books: `wanted[]` (exact-book hearts), `likely[]` (title or author hearts elsewhere), `other[]`
 - [ ] Propose screen sectioned layout consuming the suggestions API; preselect the first `wanted` row; collapse `other` by default
 - [ ] "You wished for this" badge on incoming swap detail (shown on the offered book, owner side)
