@@ -1,35 +1,14 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-
-type Condition = "good" | "worn";
-
-type SuggestionBook = {
-  id: string;
-  title: string;
-  author: string | null;
-  cover_url: string | null;
-  condition: Condition;
-  locked: boolean;
-  // Populated for `likely` entries. Either or both may be set; null on
-  // `wanted` / `other`.
-  match_title: string | null;
-  match_author: string | null;
-};
-
-type Bucket = "wanted" | "likely" | "other";
-
-type OwnerWishRow = {
-  book_id: string;
-  book: { title: string | null; author: string | null } | null;
-};
+import {
+  classifyProposeSuggestions,
+  type MyBookRow,
+  type OwnerWishRow,
+} from "@/lib/propose-suggestions";
 
 function err(code: string, message: string, status: number) {
   return NextResponse.json({ error: code, message }, { status });
-}
-
-function normalize(s: string | null | undefined): string {
-  return (s ?? "").trim().toLowerCase();
 }
 
 export async function GET(
@@ -62,7 +41,6 @@ export async function GET(
   }
 
   const admin = createAdminClient();
-  const ownerId = requested.owner_id;
 
   const [myBooksRes, ownerWishesRes, openSwapsRes] = await Promise.all([
     supabase
@@ -77,9 +55,7 @@ export async function GET(
     admin
       .from("book_wishes")
       .select("book_id, book:books(title, author)")
-      .eq("user_id", ownerId),
-    // Same "locked" check the existing Propose page does: a book I've
-    // already offered for this same requested book in an open swap.
+      .eq("user_id", requested.owner_id),
     supabase
       .from("swap_requests")
       .select("offered_book_id")
@@ -98,75 +74,12 @@ export async function GET(
     return err("open_swaps_failed", openSwapsRes.error.message, 500);
   }
 
-  const myBooks = myBooksRes.data ?? [];
+  const myBooks = (myBooksRes.data ?? []) as MyBookRow[];
   const ownerWishes = (ownerWishesRes.data ?? []) as unknown as OwnerWishRow[];
   const lockedIds = new Set(
     (openSwapsRes.data ?? []).map((s) => s.offered_book_id),
   );
 
-  const wishedBookIds = new Set<string>();
-  const wishedTitles = new Map<string, string>(); // normalized → original
-  const wishedAuthors = new Map<string, string>();
-  for (const w of ownerWishes) {
-    wishedBookIds.add(w.book_id);
-    const t = normalize(w.book?.title);
-    if (t && w.book?.title) wishedTitles.set(t, w.book.title);
-    const a = normalize(w.book?.author);
-    if (a && w.book?.author) wishedAuthors.set(a, w.book.author);
-  }
-
-  const buckets: Record<Bucket, SuggestionBook[]> = {
-    wanted: [],
-    likely: [],
-    other: [],
-  };
-
-  for (const b of myBooks) {
-    const locked = lockedIds.has(b.id);
-
-    if (wishedBookIds.has(b.id)) {
-      buckets.wanted.push({
-        id: b.id,
-        title: b.title,
-        author: b.author,
-        cover_url: b.cover_url,
-        condition: b.condition as Condition,
-        locked,
-        match_title: null,
-        match_author: null,
-      });
-      continue;
-    }
-
-    const titleHit = wishedTitles.get(normalize(b.title)) ?? null;
-    const authorHit = b.author
-      ? (wishedAuthors.get(normalize(b.author)) ?? null)
-      : null;
-
-    if (titleHit || authorHit) {
-      buckets.likely.push({
-        id: b.id,
-        title: b.title,
-        author: b.author,
-        cover_url: b.cover_url,
-        condition: b.condition as Condition,
-        locked,
-        match_title: titleHit,
-        match_author: authorHit,
-      });
-    } else {
-      buckets.other.push({
-        id: b.id,
-        title: b.title,
-        author: b.author,
-        cover_url: b.cover_url,
-        condition: b.condition as Condition,
-        locked,
-        match_title: null,
-        match_author: null,
-      });
-    }
-  }
-
+  const buckets = classifyProposeSuggestions(myBooks, ownerWishes, lockedIds);
   return NextResponse.json(buckets);
 }

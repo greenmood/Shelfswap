@@ -4,14 +4,10 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { BookCover } from "@/components/book-cover";
 import { RadioDot } from "@/components/radio-dot";
-
-type MyBook = {
-  id: string;
-  title: string;
-  author: string | null;
-  cover_url: string | null;
-  locked: boolean;
-};
+import type {
+  SuggestionBook,
+  SuggestionBuckets,
+} from "@/lib/propose-suggestions";
 
 type SwapError = {
   error: string;
@@ -29,15 +25,42 @@ const ERROR_COPY: Record<string, string> = {
 
 export function ProposeForm({
   requestedBookId,
-  myBooks,
+  suggestions,
+  ownerFirstName,
 }: {
   requestedBookId: string;
-  myBooks: MyBook[];
+  suggestions: SuggestionBuckets;
+  ownerFirstName: string | null;
 }) {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const ownerName = ownerFirstName ?? "The owner";
+
+  // Preselect the first non-locked wanted → likely → other row.
+  const initialSelected =
+    firstSelectable(suggestions.wanted) ??
+    firstSelectable(suggestions.likely) ??
+    firstSelectable(suggestions.other) ??
+    null;
+
+  const [selectedId, setSelectedId] = useState<string | null>(initialSelected);
+  // Auto-expand "Your other books" when there's nothing above it; otherwise
+  // let the user opt in.
+  const [otherExpanded, setOtherExpanded] = useState(
+    suggestions.wanted.length === 0 && suggestions.likely.length === 0,
+  );
   const [isSubmitting, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  const total =
+    suggestions.wanted.length +
+    suggestions.likely.length +
+    suggestions.other.length;
+
+  const allLocked =
+    total > 0 &&
+    suggestions.wanted.every((b) => b.locked) &&
+    suggestions.likely.every((b) => b.locked) &&
+    suggestions.other.every((b) => b.locked);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -67,8 +90,6 @@ export function ProposeForm({
       setSuccess(true);
     });
   }
-
-  const allLocked = myBooks.every((b) => b.locked);
 
   if (!success && allLocked) {
     return (
@@ -110,60 +131,45 @@ export function ProposeForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-3 space-y-6">
-      <ul className="overflow-hidden rounded-md bg-paper">
-        {myBooks.map((book) => {
-          const isLocked = book.locked;
-          const isSelected = selectedId === book.id;
-          return (
-            <li
-              key={book.id}
-              className="border-b border-divider last:border-b-0"
-            >
-              <label
-                className={`flex items-center gap-3 px-4 py-3 transition ${
-                  isLocked
-                    ? "cursor-not-allowed opacity-50"
-                    : "cursor-pointer hover:bg-cream-dim/40"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="offered"
-                  value={book.id}
-                  checked={isSelected}
-                  onChange={() => setSelectedId(book.id)}
-                  disabled={isLocked}
-                  className="sr-only"
-                />
-                <RadioDot checked={isSelected} />
-                <BookCover
-                  cover_url={book.cover_url}
-                  alt={book.title}
-                  size="sm"
-                />
-                <div className="min-w-0 flex-1 space-y-0.5">
-                  <p className="line-clamp-2 font-serif text-sm font-medium leading-tight">
-                    {book.title}
-                  </p>
-                  {book.author && (
-                    <p className="line-clamp-1 text-xs text-muted">
-                      {book.author}
-                    </p>
-                  )}
-                  {isLocked && (
-                    <p className="pt-0.5 font-mono text-[10px] uppercase tracking-widest text-muted">
-                      Already in an open swap
-                    </p>
-                  )}
-                </div>
-              </label>
-            </li>
-          );
-        })}
-      </ul>
+    <form onSubmit={handleSubmit} className="mt-4 space-y-5">
+      {suggestions.wanted.length > 0 && (
+        <Section
+          heading="They want these"
+          count={suggestions.wanted.length}
+          books={suggestions.wanted}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+          badgeFor={() => `${ownerName} wished for this`}
+          badgeTone="accent"
+        />
+      )}
 
-      <div className="space-y-3">
+      {suggestions.likely.length > 0 && (
+        <Section
+          heading="Likely matches"
+          count={suggestions.likely.length}
+          books={suggestions.likely}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+          badgeFor={(b) => likelyReason(b, ownerName)}
+          badgeTone="muted"
+        />
+      )}
+
+      {suggestions.other.length > 0 && (
+        <Section
+          heading="Your other books"
+          count={suggestions.other.length}
+          books={suggestions.other}
+          selectedId={selectedId}
+          onSelect={setSelectedId}
+          collapsible
+          expanded={otherExpanded}
+          onToggle={() => setOtherExpanded((x) => !x)}
+        />
+      )}
+
+      <div className="space-y-3 pt-2">
         <button
           type="submit"
           disabled={!selectedId || isSubmitting}
@@ -176,5 +182,125 @@ export function ProposeForm({
         )}
       </div>
     </form>
+  );
+}
+
+function firstSelectable(books: SuggestionBook[]): string | null {
+  return books.find((b) => !b.locked)?.id ?? null;
+}
+
+function likelyReason(book: SuggestionBook, ownerName: string): string {
+  if (book.match_author) return `${ownerName} likes ${book.match_author}`;
+  if (book.match_title) return `${ownerName} wished for this title`;
+  return "";
+}
+
+function Section({
+  heading,
+  count,
+  books,
+  selectedId,
+  onSelect,
+  collapsible,
+  expanded,
+  onToggle,
+  badgeFor,
+  badgeTone,
+}: {
+  heading: string;
+  count: number;
+  books: SuggestionBook[];
+  selectedId: string | null;
+  onSelect: (id: string) => void;
+  collapsible?: boolean;
+  expanded?: boolean;
+  onToggle?: () => void;
+  badgeFor?: (book: SuggestionBook) => string;
+  badgeTone?: "accent" | "muted";
+}) {
+  const isOpen = collapsible ? (expanded ?? false) : true;
+
+  return (
+    <section>
+      <div className="flex items-baseline justify-between pb-1">
+        <span className="font-mono text-[10px] font-semibold uppercase tracking-widest text-ink">
+          {heading}
+          <span className="ml-2 font-normal text-muted">{count}</span>
+        </span>
+        {collapsible && (
+          <button
+            type="button"
+            onClick={onToggle}
+            className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted hover:text-ink"
+          >
+            {isOpen ? "Hide ▴" : "Show ▾"}
+          </button>
+        )}
+      </div>
+
+      {isOpen && (
+        <ul className="overflow-hidden rounded-md bg-paper">
+          {books.map((book) => {
+            const isSelected = selectedId === book.id;
+            const badge = badgeFor?.(book);
+            return (
+              <li
+                key={book.id}
+                className="border-b border-divider last:border-b-0"
+              >
+                <label
+                  className={`flex items-center gap-3 px-4 py-3 transition ${
+                    book.locked
+                      ? "cursor-not-allowed opacity-50"
+                      : "cursor-pointer hover:bg-cream-dim/40"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="offered"
+                    value={book.id}
+                    checked={isSelected}
+                    onChange={() => onSelect(book.id)}
+                    disabled={book.locked}
+                    className="sr-only"
+                  />
+                  <RadioDot checked={isSelected} />
+                  <BookCover
+                    cover_url={book.cover_url}
+                    alt={book.title}
+                    size="sm"
+                  />
+                  <div className="min-w-0 flex-1 space-y-0.5">
+                    <p className="line-clamp-2 font-serif text-sm font-medium leading-tight">
+                      {book.title}
+                    </p>
+                    {book.author && (
+                      <p className="line-clamp-1 text-xs text-muted">
+                        {book.author}
+                      </p>
+                    )}
+                    {book.locked ? (
+                      <p className="pt-0.5 font-mono text-[10px] uppercase tracking-widest text-muted">
+                        Already in an open swap
+                      </p>
+                    ) : badge ? (
+                      <p
+                        className={`pt-0.5 font-mono text-[10px] uppercase tracking-widest ${
+                          badgeTone === "accent"
+                            ? "text-accent"
+                            : "text-muted"
+                        }`}
+                      >
+                        <span aria-hidden>♥</span> {badge}
+                      </p>
+                    ) : null}
+                  </div>
+                </label>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </section>
   );
 }

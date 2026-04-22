@@ -1,7 +1,13 @@
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { BookCover } from "@/components/book-cover";
+import {
+  classifyProposeSuggestions,
+  type MyBookRow,
+  type OwnerWishRow,
+} from "@/lib/propose-suggestions";
 import { ProposeForm } from "./propose-form";
 
 export default async function ProposePage({
@@ -17,18 +23,36 @@ export default async function ProposePage({
   }
   const supabase = await createClient();
 
-  const [requestedResult, myBooksResult, openSwapsResult] = await Promise.all([
-    supabase
-      .from("discoverable_books")
-      .select("id, title, author, cover_url, owner_id, owner_first_name")
-      .eq("id", id)
-      .single(),
+  // We need owner_id before we can fetch the owner's wishes, so this call
+  // stays sequential. Everything downstream runs in parallel.
+  const { data: requested } = await supabase
+    .from("discoverable_books")
+    .select("id, title, author, cover_url, owner_id, owner_first_name")
+    .eq("id", id)
+    .single();
+
+  if (!requested) {
+    notFound();
+  }
+  if (requested.owner_id === user.id) {
+    redirect(`/app/books/${requested.id}`);
+  }
+
+  const admin = createAdminClient();
+
+  const [myBooksRes, ownerWishesRes, openSwapsRes] = await Promise.all([
     supabase
       .from("books")
-      .select("id, title, author, cover_url")
+      .select("id, title, author, cover_url, condition, created_at")
       .eq("owner_id", user.id)
       .eq("is_available", true)
       .order("created_at", { ascending: false }),
+    // Owner wishes via admin — RLS hides other users' wishes from the caller.
+    // The wishes never leave the server; they only feed the ranking.
+    admin
+      .from("book_wishes")
+      .select("book_id, book:books(title, author)")
+      .eq("user_id", requested.owner_id),
     supabase
       .from("swap_requests")
       .select("offered_book_id")
@@ -37,22 +61,17 @@ export default async function ProposePage({
       .in("status", ["pending", "accepted"]),
   ]);
 
-  const requested = requestedResult.data;
+  const myBooks = (myBooksRes.data ?? []) as MyBookRow[];
+  const ownerWishes = (ownerWishesRes.data ?? []) as unknown as OwnerWishRow[];
   const lockedIds = new Set(
-    (openSwapsResult.data ?? []).map((s) => s.offered_book_id),
+    (openSwapsRes.data ?? []).map((s) => s.offered_book_id),
   );
-  const myBooks = (myBooksResult.data ?? []).map((b) => ({
-    ...b,
-    locked: lockedIds.has(b.id),
-  }));
 
-  if (!requested) {
-    notFound();
-  }
-
-  if (requested.owner_id === user.id) {
-    redirect(`/app/books/${requested.id}`);
-  }
+  const suggestions = classifyProposeSuggestions(
+    myBooks,
+    ownerWishes,
+    lockedIds,
+  );
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col p-6 md:max-w-lg">
@@ -67,8 +86,6 @@ export default async function ProposePage({
         Propose a swap
       </h1>
 
-      {/* Target card — the book you want. Accent-soft bg signals which
-          direction of the swap this row represents. */}
       <section className="mt-6 flex items-start gap-3 rounded-md bg-accent-soft p-3">
         <BookCover
           cover_url={requested.cover_url}
@@ -93,12 +110,8 @@ export default async function ProposePage({
         </div>
       </section>
 
-      <p className="mt-6 font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
-        Offer in return (pick one)
-      </p>
-
       {myBooks.length === 0 ? (
-        <div className="mt-3 flex flex-col items-center gap-3 rounded-md border border-dashed border-subtle bg-cream-dim/40 p-6 text-center">
+        <div className="mt-8 flex flex-col items-center gap-3 rounded-md border border-dashed border-subtle bg-cream-dim/40 p-6 text-center">
           <p className="text-sm">
             You don&rsquo;t have any available books to offer.
           </p>
@@ -110,7 +123,11 @@ export default async function ProposePage({
           </Link>
         </div>
       ) : (
-        <ProposeForm requestedBookId={requested.id} myBooks={myBooks} />
+        <ProposeForm
+          requestedBookId={requested.id}
+          suggestions={suggestions}
+          ownerFirstName={requested.owner_first_name ?? null}
+        />
       )}
     </main>
   );
