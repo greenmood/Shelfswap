@@ -1,12 +1,20 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { BookCover } from "@/components/book-cover";
 import {
   BookStatusPill,
   type BookStatus,
 } from "@/components/book-status-pill";
 import { AvailabilityToggle } from "./availability-toggle";
+
+type Match = {
+  owner_id: string;
+  first_name: string | null;
+  they_have: number; // books on their shelf I've hearted (and are available)
+  they_want: number; // books on my shelf they've hearted (and are available)
+};
 
 export default async function AppHome() {
   const user = await getCurrentUser();
@@ -15,14 +23,14 @@ export default async function AppHome() {
   }
   const supabase = await createClient();
 
-  // In parallel: profile, books, and the two slices of active-swap book IDs.
-  // A book is "in swap" if it appears on either side of a pending/accepted
-  // swap where I'm the corresponding party.
+  // In parallel: profile, books, active-swap book IDs (both sides), and my
+  // wishes so we can compute a mutual heart match below.
   const [
     { data: profile },
     { data: books },
     { data: asOwnerSwaps },
     { data: asRequesterSwaps },
+    { data: myWishes },
   ] = await Promise.all([
     supabase.from("users").select("first_name").eq("id", user.id).single(),
     supabase
@@ -40,6 +48,11 @@ export default async function AppHome() {
       .select("offered_book_id")
       .in("status", ["pending", "accepted"])
       .eq("requester_id", user.id),
+    // my_wishes view is scoped to auth.uid() and includes the owner's
+    // first_name + availability, which is everything the match needs.
+    supabase
+      .from("my_wishes")
+      .select("owner_id, owner_first_name, is_available"),
   ]);
 
   const inSwapIds = new Set<string>();
@@ -62,6 +75,17 @@ export default async function AppHome() {
   };
 
   const hasBooks = booksWithStatus.length > 0;
+
+  // --- Mutual heart match --------------------------------------------------
+  // Group my wishes by owner (counting only available books, since those are
+  // the ones I could actually propose for). Then ask: which of those owners
+  // have hearted any of my available books? Pick the strongest mutual match.
+  const topMatch = await computeTopMatch({
+    myWishes: myWishes ?? [],
+    myAvailableBookIds: booksWithStatus
+      .filter((b) => b.status === "available")
+      .map((b) => b.id),
+  });
 
   return (
     <main className="relative mx-auto flex min-h-screen max-w-md flex-col p-6 pb-24 md:max-w-4xl md:pb-6">
@@ -112,6 +136,8 @@ export default async function AppHome() {
           </Link>
         </div>
       )}
+
+      {topMatch && <MatchBanner match={topMatch} />}
 
       {!hasBooks ? (
         <div className="mt-8 flex flex-col items-center gap-2 rounded-md border border-dashed border-subtle bg-cream-dim/40 p-10 text-center">
@@ -233,5 +259,96 @@ function Stat({ num, label }: { num: number; label: string }) {
         {label}
       </span>
     </div>
+  );
+}
+
+type MyWishRow = {
+  owner_id: string;
+  owner_first_name: string | null;
+  is_available: boolean;
+};
+
+async function computeTopMatch({
+  myWishes,
+  myAvailableBookIds,
+}: {
+  myWishes: MyWishRow[];
+  myAvailableBookIds: string[];
+}): Promise<Match | null> {
+  if (myWishes.length === 0 || myAvailableBookIds.length === 0) return null;
+
+  const byOwner = new Map<
+    string,
+    { first_name: string | null; they_have: number }
+  >();
+  for (const w of myWishes) {
+    if (!w.is_available) continue;
+    const e = byOwner.get(w.owner_id) ?? {
+      first_name: w.owner_first_name,
+      they_have: 0,
+    };
+    e.they_have += 1;
+    byOwner.set(w.owner_id, e);
+  }
+  if (byOwner.size === 0) return null;
+
+  // Admin client: book_wishes RLS hides other users' rows. We only ask about
+  // specific owners (the ones I've already hearted books from) against my
+  // specific book ids — the answer never leaves the server unbucketed.
+  const admin = createAdminClient();
+  const { data: theirWishesOnMine } = await admin
+    .from("book_wishes")
+    .select("user_id, book_id")
+    .in("user_id", Array.from(byOwner.keys()))
+    .in("book_id", myAvailableBookIds);
+
+  const theyWantByUser = new Map<string, number>();
+  for (const row of theirWishesOnMine ?? []) {
+    theyWantByUser.set(
+      row.user_id,
+      (theyWantByUser.get(row.user_id) ?? 0) + 1,
+    );
+  }
+
+  let best: Match | null = null;
+  for (const [owner_id, v] of byOwner) {
+    const they_want = theyWantByUser.get(owner_id) ?? 0;
+    if (they_want === 0) continue; // one-sided: identity stays hidden
+    const score = v.they_have + they_want;
+    const bestScore = best ? best.they_have + best.they_want : -1;
+    if (score > bestScore) {
+      best = {
+        owner_id,
+        first_name: v.first_name,
+        they_have: v.they_have,
+        they_want,
+      };
+    }
+  }
+  return best;
+}
+
+function MatchBanner({ match }: { match: Match }) {
+  const name = match.first_name ?? "Someone";
+  const haveWord = match.they_have === 1 ? "book" : "books";
+  const wantWord = match.they_want === 1 ? "book" : "books";
+  return (
+    <Link
+      href={`/app/users/${match.owner_id}`}
+      className="mt-6 block rounded-md border-l-2 border-accent bg-accent-soft px-3 py-2.5 text-sm leading-snug hover:bg-accent-soft/80"
+    >
+      <span className="font-medium">{name}</span> has{" "}
+      <span className="font-medium">
+        {match.they_have} {haveWord}
+      </span>{" "}
+      you&rsquo;ve hearted, and wants{" "}
+      <span className="font-medium">
+        {match.they_want} {wantWord}
+      </span>{" "}
+      of yours.
+      <span className="mt-1 block font-mono text-[10px] font-medium uppercase tracking-widest text-accent">
+        Propose a swap →
+      </span>
+    </Link>
   );
 }

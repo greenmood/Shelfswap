@@ -167,7 +167,7 @@ RLS:
 - [x] `GET /api/propose-suggestions/:requestedBookId` — returns three ranked arrays of the requester's available books: `wanted[]` (exact-book hearts), `likely[]` (title or author hearts elsewhere), `other[]`
 - [x] Propose screen sectioned layout consuming the suggestions API; preselect the first `wanted` row; collapse `other` by default
 - [x] "You wished for this" badge on incoming swap detail (shown on the offered book, owner side)
-- [ ] Match banner on Library: "X has N books you've hearted and wants M of yours → Propose"
+- [x] Match banner on Library: "X has N books you've hearted and wants M of yours → Propose"
 
 ### Out of scope for Week 6
 

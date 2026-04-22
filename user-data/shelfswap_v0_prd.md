@@ -78,7 +78,10 @@ v0 works: friends list books, find each other's books, negotiate swaps. The live
 
 ### Privacy model
 
-Hearts inherit v0's anonymity pattern. Owners see **aggregate** heart counts on their books ("3 people want this") — never names. Identity is revealed only when a hearter proposes an actual swap, same gating as handle reveal.
+Hearts inherit v0's anonymity pattern. Owners see **aggregate** heart counts on their books ("3 people want this") — never names. Identity is revealed in exactly two cases:
+
+1. **Proposed swap** — the requester's identity links to the swap, same gating as handle reveal.
+2. **Mutual heart match** — when I've hearted at least one of your books *and* you've hearted at least one of mine, the match banner names you to me (and me to you). One-sided hearts stay anonymous; the reveal is symmetric and requires an act from each side.
 
 ### What's still out
 
