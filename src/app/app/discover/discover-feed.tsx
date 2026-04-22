@@ -3,6 +3,7 @@
 import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { BookCover } from "@/components/book-cover";
+import { HeartButton } from "@/components/heart-button";
 import { createClient } from "@/lib/supabase/client";
 
 export const PAGE_SIZE = 20;
@@ -27,9 +28,11 @@ function sanitizeForOr(raw: string): string {
 export function DiscoverFeed({
   initial,
   currentUserId,
+  initialWishedBookIds,
 }: {
   initial: DiscoverBook[];
   currentUserId: string;
+  initialWishedBookIds: string[];
 }) {
   const [query, setQuery] = useState("");
   const [items, setItems] = useState<DiscoverBook[]>(initial);
@@ -37,6 +40,20 @@ export function DiscoverFeed({
   const [isSearching, setIsSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoadingMore, startLoadMore] = useTransition();
+
+  // Lift the wish set so a heart toggled in one row stays correct if the list
+  // refetches (search, pagination) and that same book re-appears.
+  const [wishedIds, setWishedIds] = useState<Set<string>>(
+    () => new Set(initialWishedBookIds),
+  );
+  function onHeartToggle(bookId: string, wished: boolean) {
+    setWishedIds((prev) => {
+      const next = new Set(prev);
+      if (wished) next.add(bookId);
+      else next.delete(bookId);
+      return next;
+    });
+  }
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortRef = useRef<AbortController | null>(null);
@@ -169,11 +186,11 @@ export function DiscoverFeed({
           {items.map((book) => (
             <li
               key={book.id}
-              className="border-b border-divider last:border-b-0"
+              className="flex items-start gap-3 border-b border-divider px-4 py-3 last:border-b-0 hover:bg-cream-dim/40"
             >
               <Link
                 href={`/app/discover/books/${book.id}`}
-                className="flex items-start gap-3 px-4 py-3 transition hover:bg-cream-dim/40"
+                className="flex min-w-0 flex-1 items-start gap-3"
               >
                 <BookCover
                   cover_url={book.cover_url}
@@ -195,6 +212,11 @@ export function DiscoverFeed({
                   </p>
                 </div>
               </Link>
+              <HeartButton
+                bookId={book.id}
+                initialWished={wishedIds.has(book.id)}
+                onToggle={(w) => onHeartToggle(book.id, w)}
+              />
             </li>
           ))}
         </ul>

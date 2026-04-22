@@ -160,9 +160,9 @@ RLS:
 - [x] `book_wishes` table + RLS policies
 - [x] `book_wish_counts` view, joined onto `discoverable_books`
 - [x] `POST /api/wishes` and `DELETE /api/wishes/:bookId` — optimistic toggle
-- [ ] Heart button on Discover rows
-- [ ] Heart button on book detail + aggregate "N people want this"
-- [ ] Heart button on owner-profile book rows
+- [x] Heart button on Discover rows
+- [x] Heart button on book detail + aggregate "N people want this"
+- [x] Heart button on owner-profile book rows
 - [ ] `/app/wishes` screen — list of hearted books with a propose shortcut when the owner has something swappable
 - [ ] `GET /api/propose-suggestions/:requestedBookId` — returns three ranked arrays of the requester's available books: `wanted[]` (exact-book hearts), `likely[]` (title or author hearts elsewhere), `other[]`
 - [ ] Propose screen sectioned layout consuming the suggestions API; preselect the first `wanted` row; collapse `other` by default

@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient, getCurrentUser } from "@/lib/supabase/server";
 import { BookCover } from "@/components/book-cover";
+import { HeartButton } from "@/components/heart-button";
 
 export default async function DiscoverBookPage({
   params,
@@ -16,14 +17,22 @@ export default async function DiscoverBookPage({
   }
   const supabase = await createClient();
 
-  const { data: book } = await supabase
-    .from("discoverable_books")
-    .select(
-      "id, title, author, cover_url, condition, owner_id, owner_first_name",
-    )
-    .eq("id", id)
-    .single();
+  const [bookRes, wishRes] = await Promise.all([
+    supabase
+      .from("discoverable_books")
+      .select(
+        "id, title, author, cover_url, condition, owner_id, owner_first_name, wish_count",
+      )
+      .eq("id", id)
+      .single(),
+    supabase
+      .from("book_wishes")
+      .select("book_id")
+      .eq("book_id", id)
+      .maybeSingle(),
+  ]);
 
+  const book = bookRes.data;
   if (!book) {
     notFound();
   }
@@ -36,15 +45,20 @@ export default async function DiscoverBookPage({
   const ownerName = book.owner_first_name ?? "someone";
   const conditionLabel =
     book.condition === "good" ? "Good condition" : "Worn condition";
+  const wished = wishRes.data !== null;
+  const wishCount = book.wish_count ?? 0;
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col p-6 md:max-w-lg">
-      <Link
-        href="/app/discover"
-        className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted hover:text-ink"
-      >
-        ← Discover
-      </Link>
+      <div className="flex items-center justify-between">
+        <Link
+          href="/app/discover"
+          className="font-mono text-[10px] font-medium uppercase tracking-widest text-muted hover:text-ink"
+        >
+          ← Discover
+        </Link>
+        <HeartButton bookId={book.id} initialWished={wished} />
+      </div>
 
       {/* Hero: big centered cover + title + author + condition pill */}
       <section className="mt-8 flex flex-col items-center text-center">
@@ -62,6 +76,14 @@ export default async function DiscoverBookPage({
             {conditionLabel}
           </span>
         </div>
+        {wishCount > 0 && (
+          <p className="mt-3 font-mono text-[10px] font-medium uppercase tracking-widest text-muted">
+            <span className="text-accent">♥</span>{" "}
+            {wishCount === 1
+              ? "1 person wants this"
+              : `${wishCount} people want this`}
+          </p>
+        )}
       </section>
 
       {/* Owner card — clickable; taps through to the public profile */}
